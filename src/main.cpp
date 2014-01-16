@@ -87,8 +87,8 @@ int main(int argc, char* argv[])
   ITerrainSceneNode* terrain = smgr->addTerrainSceneNode(
     "./assets/textures/hm/hm1_valley.bmp", // Asset
     0, -1, // Parent ID, Node ID
-    vector3df(-HM_SIZE*HM_SCALEXZ/2, 0.0f, -HM_SIZE*HM_SCALEXZ/2),   // Node Position
-    vector3df(0.0f, 0.0f, 0.0f),   // Rotation
+    vector3df(-HM_SIZE*HM_SCALEXZ/2, 0.0f, -HM_SIZE*HM_SCALEXZ/2), // Node Position
+    vector3df(0.0f, 0.0f, 0.0f), // Rotation
     vector3df(HM_SCALEXZ, HM_SCALEY, HM_SCALEXZ), // Scaling
     video::SColor(25, 25, 25, 255), // Vertex Color
     5, // Maximum LOD

@@ -75,6 +75,22 @@ int main(int argc, char* argv[])
   // Setup camera.
   ICameraSceneNode* camera = smgr->addCameraSceneNodeFPS(0, 100.0f, 1.2f);
   
+  camera->setPosition(vector3df(0.0f, 0.0f, 0.0f));
+  camera->setTarget(vector3df(0.0f, 0.0f, 0.0f));
+  camera->setFarValue(42000.0f);
+  
+  // Setup terrain.
+  ITerrainSceneNode* terrain = smgr->addTerrainSceneNode(
+    "./assets/textures/hm/hm1_valley.bmp", // Asset
+    0, -1, // Parent ID, Node ID
+    vector3df(0.0f, 0.0f, 0.0f),   // Node Position
+    vector3df(0.0f, 0.0f, 0.0f),   // Rotation
+    vector3df(40.0f, 4.4f, 40.0f), // Scaling
+    video::SColor(255, 255, 255, 255), // Vertex Color
+    5, // Maximum LOD
+    ETPS_17, // Patch size
+    4); // Smoothing factor
+  
   // Simple game loop.
   while(device->run()) {
     driver->beginScene(true, true, SColor(255, 100, 101, 140));

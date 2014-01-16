@@ -1,6 +1,10 @@
 #include <irrlicht.h>
 #include <iostream>
 
+#define HM_SIZE 1024
+#define HM_SCALEXZ 40.0f
+#define HM_SCALEY 4.4f
+
 using namespace std;
 using namespace irr;
 using namespace core;
@@ -70,23 +74,21 @@ int main(int argc, char* argv[])
   ISceneManager* smgr = device->getSceneManager();
   IGUIEnvironment* guienv = device->getGUIEnvironment();
   
-  guienv->addStaticText(L"Hello, world! This is an irrlicht test build!", rect<s32>(10, 10, 260, 22), true);
-  
   // Setup camera.
   ICameraSceneNode* camera = smgr->addCameraSceneNodeFPS(0, 100.0f, 1.2f);
   
-  camera->setPosition(vector3df(0.0f, 0.0f, 0.0f));
-  camera->setTarget(vector3df(0.0f, 0.0f, 0.0f));
+  camera->setPosition(vector3df(0.0f, (255)*HM_SCALEY/2, 0.0f));
+  camera->setTarget(vector3df(10.0f, 0.0f, 0.0f));
   camera->setFarValue(42000.0f);
   
   // Setup terrain.
   ITerrainSceneNode* terrain = smgr->addTerrainSceneNode(
     "./assets/textures/hm/hm1_valley.bmp", // Asset
     0, -1, // Parent ID, Node ID
-    vector3df(0.0f, 0.0f, 0.0f),   // Node Position
+    vector3df(-HM_SIZE*HM_SCALEXZ/2, 0.0f, -HM_SIZE*HM_SCALEXZ/2),   // Node Position
     vector3df(0.0f, 0.0f, 0.0f),   // Rotation
-    vector3df(40.0f, 4.4f, 40.0f), // Scaling
-    video::SColor(255, 255, 255, 255), // Vertex Color
+    vector3df(HM_SCALEXZ, HM_SCALEY, HM_SCALEXZ), // Scaling
+    video::SColor(25, 25, 25, 255), // Vertex Color
     5, // Maximum LOD
     ETPS_17, // Patch size
     4); // Smoothing factor

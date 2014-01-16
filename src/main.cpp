@@ -11,13 +11,14 @@ using namespace gui;
 
 int main(int argc, char* argv[])
 {
+  // VARIABLES
   char chbuffer;
   IrrlichtDevice* device;
   video::E_DRIVER_TYPE driverType;
   
   // Initialize rendering device.
   cout << "Please select the rendering device you would like to use:" << endl
-       << " (a) OpenGL 1.5" << endl
+       << " (a) OpenGL 3.1" << endl
        << " (b) Direct3D 9.0c" << endl
        << " (c) Direct3D 8.1" << endl
        << " (d) Burning Software Render" << endl
@@ -71,6 +72,10 @@ int main(int argc, char* argv[])
   
   guienv->addStaticText(L"Hello, world! This is an irrlicht test build!", rect<s32>(10, 10, 260, 22), true);
   
+  // Setup camera.
+  ICameraSceneNode* camera = smgr->addCameraSceneNodeFPS(0, 100.0f, 1.2f);
+  
+  // Simple game loop.
   while(device->run()) {
     driver->beginScene(true, true, SColor(255, 100, 101, 140));
     
@@ -80,6 +85,7 @@ int main(int argc, char* argv[])
     driver->endScene();
   }
   
+  // Uninitialize
   device->drop();
   
   return 0;

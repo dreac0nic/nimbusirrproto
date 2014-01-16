@@ -6,6 +6,8 @@
 #define HM_SCALEXZ 40.0f
 #define HM_SCALEY 10.0f
 
+#define LIGHT_PULSE_MODIFIER 100000
+
 using namespace std;
 using namespace irr;
 using namespace core;
@@ -63,8 +65,20 @@ int main(int argc, char* argv[])
     return 1;
   }
   
+  // Heightmap
+  std::string heightmap;
+  cout << "Heightmap: ";
+  
+  cin >> heightmap;
+  
+  if(heightmap == "n") heightmap = "hm1_valley.bmp";
+  
+  heightmap = "./assets/textures/hm/" + heightmap;
+  
+  cout << "Using heightmap (n for default): " << heightmap << endl << endl;
+  
   // Create device and exit if creation failed.
-  device = createDevice(driverType, core::dimension2d<u32>(640, 480));
+  device = createDevice(driverType, core::dimension2d<u32>(1024, 768));
   
   if(device == 0) return 1;
   
@@ -86,7 +100,7 @@ int main(int argc, char* argv[])
   
   // Setup terrain.
   ITerrainSceneNode* terrain = smgr->addTerrainSceneNode(
-    "./assets/textures/hm/hm1_valley.bmp", // Asset
+							 heightmap.c_str(), // Asset
     0, -1, // Parent ID, Node ID
     vector3df(-HM_SIZE*HM_SCALEXZ/2, 0.0f, -HM_SIZE*HM_SCALEXZ/2), // Node Position
     vector3df(0.0f, 0.0f, 0.0f), // Rotation
@@ -109,7 +123,7 @@ int main(int argc, char* argv[])
     selector, // Collisioner
     camera, // Effected entity
     vector3df(60.0f, 100.0f, 60.0f), // Bounding
-    vector3df(0.0f, -10.0f, 0.0f), // Gravity
+    vector3df(0.0f, 0.0f, 0.0f), // Gravity
     vector3df(0.0f, 50.0f, 0.0f)); // Translation of bounding area
   
   camera->addAnimator(anim);
@@ -119,30 +133,50 @@ int main(int argc, char* argv[])
   anim->drop();
   
   // Add some super basic lighting.
-  ILightSceneNode* light = smgr->addLightSceneNode(
+  double sunDistance = HM_SIZE*HM_SCALEXZ*2;
+  double sunFactor = 14.4;
+  double angleInSky = 0.95993;
+  double tweakAngle = 0.69813;
+  
+  ILightSceneNode* sun = smgr->addLightSceneNode(
     0, // Parent Node
-    vector3df(0.0f, 255*HM_SCALEY*1.1f, 0.0f), // Position
+    vector3df(-1*sunDistance*sin(angleInSky), sunDistance*cos(angleInSky), sunDistance*sin(tweakAngle)), // Position
     video::SColor(255, 247, 247, 87), // Color
-    HM_SIZE*HM_SCALEXZ*1.3/2); // Radius
+    HM_SIZE*HM_SCALEXZ*sunFactor + sunDistance); // Radius
+  
+  ILightSceneNode* cameraLight = smgr->addLightSceneNode(0, vector3df(0.0f, 0.0f, 0.0f), video::SColor(255, 247, 247, 87), 1800.0f);
+  
+  unsigned long long int tick = 0;
   
   // Simple game loop.
   while(device->run()) {
     // Setup HUD
     wstringstream buffer; // HUD FOR ME
     
+    // FOR MEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE ...
     buffer << driver->getName() << "\n"
+           << "Heightmap Used: " << heightmap.c_str() << "\n"
            << "Framerate: " << driver->getFPS() << "\n"
            << "Height: " << terrain->getHeight(camera->getAbsolutePosition().X, camera->getAbsolutePosition().Z) << "\n";
     
+    // Update light
+    // light->setRadius(HM_SIZE*HM_SCALEXZ*1.3/2 + HM_SIZE*HM_SCALEXZ*1.2*(tick%LIGHT_PULSE_MODIFIER));
+    // cameraLight->setPosition(vector3df(camera->getAbsolutePosition().X, camera->getAbsolutePosition().Y, camera->getAbsolutePosition().Z));
+    
+    // SO YOU THINK YOU CAN STREAM ME AND RENDER THE SCENE
     driver->beginScene(true, true, SColor(255, 100, 101, 140));
     
+    // SO YOU THINK YOU CAN LEAVE ME AND DRAW ALL THE MANAGERS
     smgr->drawAll();
-    guienv->drawAll();
+    guienv->drawAll(); // OOooooooooooh baby. Can't do this to me baby ...
     
-    // Draw text
+    // Just gotta get drawn, just gotta drawn right on to here!
     guienv->getBuiltInFont()->draw(buffer.str().c_str(), rect<s32>(10, 10, 260, 22), video::SColor(255, 255, 255, 255));
     
     driver->endScene();
+    
+    // Increaase the tick.
+    ++tick;
   }
   
   // Uninitialize

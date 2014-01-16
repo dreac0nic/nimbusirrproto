@@ -1,0 +1,1 @@
+This is a simple prototype of the "Nimbus" (working title) game project.

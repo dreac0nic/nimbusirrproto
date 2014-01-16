@@ -98,6 +98,25 @@ int main(int argc, char* argv[])
   terrain->setMaterialTexture(0, driver->getTexture("./assets/textures/terrain/grass/simple1_small.jpg"));
   terrain->scaleTexture(20.0f);
   
+  // Setup simple collision for the camera
+  // -- Selector
+  ITriangleSelector* selector = smgr->createTerrainTriangleSelector(terrain, 0);
+  terrain->setTriangleSelector(selector);
+  
+  // -- Setup Collision
+  ISceneNodeAnimator* anim = smgr->createCollisionResponseAnimator(
+    selector,
+    camera,
+    vector3df(60.0f, 100.0f, 60.0f),
+    vector3df(0.0f, 0.0f, 0.0f),
+    vector3df(0.0f, 50.0f, 0.0f));
+  
+  camera->addAnimator(anim);
+  
+  // -- Cleanup
+  selector->drop();
+  anim->drop();
+  
   // Add some super basic lighting.
   ILightSceneNode* light = smgr->addLightSceneNode(
     0, // Parent Node

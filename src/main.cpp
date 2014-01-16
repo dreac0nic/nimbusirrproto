@@ -78,8 +78,10 @@ int main(int argc, char* argv[])
   ICameraSceneNode* camera = smgr->addCameraSceneNodeFPS(0, 100.0f, 1.2f);
   
   camera->setPosition(vector3df(0.0f, (255)*HM_SCALEY/2, 0.0f));
-  camera->setTarget(vector3df(10.0f, 0.0f, 0.0f));
+  camera->setTarget(vector3df(HM_SIZE*HM_SCALEXZ, 0.0f, 0.0f));
   camera->setFarValue(42000.0f);
+  
+  device->getCursorControl()->setVisible(false);
   
   // Setup terrain.
   ITerrainSceneNode* terrain = smgr->addTerrainSceneNode(
@@ -92,6 +94,13 @@ int main(int argc, char* argv[])
     5, // Maximum LOD
     ETPS_17, // Patch size
     4); // Smoothing factor
+  
+  // Add some super basic lighting.
+  ILightSceneNode* light = smgr->addLightSceneNode(
+    0, // Parent Node
+    vector3df(0.0f, 255*HM_SCALEY*1.1f, 0.0f), // Position
+    video::SColor(247, 247, 87, 255), // Color
+    HM_SIZE*HM_SCALEXZ*1.3/2); // Radius
   
   // Simple game loop.
   while(device->run()) {

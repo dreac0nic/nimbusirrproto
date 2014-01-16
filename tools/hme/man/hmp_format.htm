@@ -1,0 +1,14 @@
+<html>
+<head>
+<title>HMP Specifications</title>
+</head>
+<body>
+<font size=+1>HMP (<b>H</b>eight <b>M</b>a<b>P</b>) Specs. </font><br><br>
+The HMP format is very simple:<br>
+There is a 100 octets header, at the beginning of the file, then the raw, unencoded height array,
+in the form: height=(y*ysize+x);<br>
+The header has, so far, two fields: The first 4 octets are the map X size, then the next 4 are the map Y size.<br>
+The rest of the header bytes are reserved.
+
+</body>
+</html>

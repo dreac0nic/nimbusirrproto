@@ -1,0 +1,15 @@
+I'll assume you do have SDL installed, on your system.
+If not, go to: www.libsdl.org , and get it.
+To compile on Linux (and other Unix clones), you have to:
+Edit the file global.h , and comment the  #define WINDOWS line.
+Then, use this, in the source directory:
+gcc -o terrained -g *.c -lSDL -lpthread
+
+Please note that, in order for the program to work, you need the following files 
+where the binary program is: font.bmp, icon.bmp, cursors.bmp and toolbar.bmp
+
+I don't have a Linux machine, so I didn't test it on this OS, but some other people did,
+and they reported me to work properly. In case you find a bug, please contact me.
+
+Thanks to  Morpius <morpius@ntlworld.com> and  Bussman Alexander <zorax@linux.nu> 
+for helping me with the porting stuff. 

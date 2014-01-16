@@ -1,0 +1,146 @@
+<html>
+<head>
+<title>Height Map Editor - Manual</title>
+<body>
+<font size=+1><b>Toolbar icons:</b></font><br>
+<table>
+<tr><td>
+<img src="place.jpg" border=0>
+</td>
+<td>
+<b>Draw</b> a pixel, or a free hand line, with the current height.
+</td></tr>
+<tr><td>
+<img src="escavate.jpg" border=0>
+</td><td>
+<b>Escavate</b> the terrain (new height=terrain height-current height).
+In case the new height is smaller than 0, then new height = 0
+</td></tr>
+<tr><td>
+<img src="elevate.jpg" border=0>
+</td><td>
+<b>Elevate</b> the terrain (new height=terrain height+selected height).
+In case the new height is bigger than 255, then new height = 255
+</td></tr>
+<tr><td>
+<img src="peek.jpg" border=0>
+</td><td>
+<b>Peek</b> the terrain height (like the eyedrop, in graphic programs)
+</td></tr>
+<tr><td>
+<img src="select.jpg" border=0>
+</td><td>
+<b>Select</b> an area. Left click, after an area is selected will deselect it.<br>
+<b><font color=red>Important:</font></b> When an area is selected, the following tools will
+operate ONLY in that area, not on the entire map: <b>Smooth</b>, <b>Rise</b>, <b>Sink</b>, <b>Save</b>
+and <b>New terrain</b>. <b>New terrain</b>, however, will act different: It will set the entire selected area
+to the current height
+</td></tr>
+<tr><td>
+<img src="replace.jpg" border=0>
+</td><td>
+<b>Replace</b> the terrain height pointed by the mouse, with some other heights (see bellow).
+<b>Right click</b> on that icon, and it will bring up the tolerance mode/value.
+Basically, + tolerance means: "replace all the heights equal or greater than (the terrain height + tolerance value)
+with the current height. - and +/- tolerance modes are similar. Replace mode means:<br>
+<b>=</b> Just replace that height with the selected height.<br>
+<b>-</b> Substract from the old height, the current height.<br>
+<b>+</b> Add to the old height, the current height.<br>
+The solid mode means "use the selected height", while pattern mode means using a selected pattern.<br>
+It is hard to explain, really, just experiment and see for yourself :)
+</td></tr>
+
+<tr><td>
+<img src="global_replace.jpg" border=0>
+</td><td>
+<b>Global Replace</b> is very similar with the <b>Replace</b> tool, only that it will affect the
+ENTIRE terrain, instead of only the neighbour heigts that match the tollerance limit.
+<b>Right click</b> on that icon, and it will bring up the tolerance mode/value.
+</td></tr>
+
+<tr><td>
+<img src="flood.jpg" border=0>
+</td><td>
+<b>Flood</b> an area with the current height, until it finds the terrain height again.
+Basically, if you draw a circle/rectangle, with the height of 10, and then you flood it's interior, with
+height 10, it will fill that rectangle with height 10. However, if you try to fill it with height 11, it
+will most likely ruin your entire terrain, trying to flood all the map. Just experiment with it.
+</td></tr>
+<tr><td>
+<img src="zoomin.jpg" border=0>
+</td><td>
+<b>Zoom in</b> the terrain. There are 16 levels of zoom (100%-1600%). Note that you have to click
+on an area you want to zoom. <b>Right click</b> on it and it will <b>zoom out</b>.
+</td></tr>
+<tr><td>
+<img src="object.jpg" border=0>
+</td><td>
+<b>Place object</b> on/in/over the terrain.<br>
+<b>Right click</b> on it to get the options menu. Basically, there are 3 modes: Place, increase and decrease<br>
+Place means it will just put that object OVER the existing heights.<br>
+Increase means that the existing terrain will be increased with the height of the coresponding heights from that object.<br>
+Decrease means the same as increase, only that the terrain will be decreased.<br>
+I am not good at explaining things, so just play with the options, and you will see what they do.<br>
+When you are using an object (dragging it with the mouse), if you right click the mouse, the object will
+dissapear, and the current tool will be the pen (put height). So, next time you want to use the ojbect
+tool, you will have to load another object.
+
+</td></tr>
+<tr><td>
+<img src="smooth.jpg" border=0>
+</td><td>
+<b>Smooth</b> the entire terrain (averaging the heights). The more you use it, the flatter the terrain becomes.
+</td></tr>
+<tr><td>
+<img src="rise.jpg" border=0>
+</td><td>
+<b>Rise</b> the entire terrain with the current height.
+</td></tr>
+<tr><td>
+<img src="sink.jpg" border=0>
+</td><td>
+<b>Sink</b> the entire terrain with the current height.
+</td></tr>
+<tr><td>
+<img src="rotate.jpg" border=0>
+</td><td>
+<b>Rotate</b> or flip the terrain.
+</td></tr>
+<tr><td>
+<img src="new.jpg" border=0>
+</td><td>
+<b>New</b> terrain. Choose a x/y size bigger than 63 pixels, and smaller than 10000 pixels, and a
+background height, from 0 to 255. Note: It won't prompt you for a confirmation, so, unless you saved the previous terrain, that is lost.
+</td></tr>
+<tr><td>
+<img src="generate.jpg" border=0>
+</td><td>
+<b>Generate</b> the relief. Note that, unless you check the option: "Overwrite terrain", it will only
+generate a new terrain on the black (0) heights, leaving the others unaffected.
+</td></tr>
+<tr><td>
+<img src="load.jpg" border=0>
+</td><td>
+<b>Load</b> a <a href="hmp_format.htm"><font color=black><b>hmp</b></font></a> or <b>bmp</b> file. Warning: there is no confirmation, so you will loose the old terrain, unless you saved it.
+</td></tr>
+<tr><td>
+<img src="save.jpg" border=0>
+</td><td>
+<b>Save</b> the current terrain into a <a href="hmp_format.htm"><font color=black><b>hmp</b></font></a> or <b>bmp</b> file.
+</td></tr>
+</table>
+
+<b>Other:</b><br>
+<b>Ctrl+z:  Undo.</b><br>
+<b>Tab:</b> Switch between top down view and some sort of pseudo isometric view.<br>
+<b>Caps Look pressed:</b> The current cursor will change it's shape into a target, to have more
+control over the exact spot it will point.<br>
+<b>Arrows</b> move you on the map.<br>
+<b>Right click</b> on the <b>terrain</b> opens the "View menu", where you can select if you want to see the status bar,
+the toolbar, the minimap, and various grid sizes.<br>
+<b>Right click</b> nn the minimap, status bar, and tool bar (except on the toolbar's icons that do something when you right click on them) allow
+you to move them.<br>
+<b>Enter</b>, in a  menu, means "Ok", <b>ESC</b> or <b>right click</b> means "Cancel".
+
+</body>
+</html>

@@ -3,7 +3,7 @@
 
 #define HM_SIZE 1024
 #define HM_SCALEXZ 40.0f
-#define HM_SCALEY 4.4f
+#define HM_SCALEY 10.0f
 
 using namespace std;
 using namespace irr;
@@ -91,15 +91,18 @@ int main(int argc, char* argv[])
     vector3df(0.0f, 0.0f, 0.0f), // Rotation
     vector3df(HM_SCALEXZ, HM_SCALEY, HM_SCALEXZ), // Scaling
     video::SColor(25, 25, 25, 255), // Vertex Color
-    5, // Maximum LOD
+    3, // Maximum LOD
     ETPS_17, // Patch size
     4); // Smoothing factor
+  
+  terrain->setMaterialTexture(0, driver->getTexture("./assets/textures/terrain/grass/simple1_small.jpg"));
+  terrain->scaleTexture(20.0f);
   
   // Add some super basic lighting.
   ILightSceneNode* light = smgr->addLightSceneNode(
     0, // Parent Node
     vector3df(0.0f, 255*HM_SCALEY*1.1f, 0.0f), // Position
-    video::SColor(247, 247, 87, 255), // Color
+    video::SColor(255, 247, 247, 87), // Color
     HM_SIZE*HM_SCALEXZ*1.3/2); // Radius
   
   // Simple game loop.

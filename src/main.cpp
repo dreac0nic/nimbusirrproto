@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
   
   // Initialize rendering device.
   cout << "Please select the rendering device you would like to use:" << endl
-       << " (a) OpenGL 3.1" << endl
+       << " (a) OpenGL 3.1 (RECOMMENDED)" << endl
        << " (b) Direct3D 9.0c" << endl
        << " (c) Direct3D 8.1" << endl
        << " (d) Burning Software Render" << endl
@@ -105,11 +105,11 @@ int main(int argc, char* argv[])
   
   // -- Setup Collision
   ISceneNodeAnimator* anim = smgr->createCollisionResponseAnimator(
-    selector,
-    camera,
-    vector3df(60.0f, 100.0f, 60.0f),
-    vector3df(0.0f, 0.0f, 0.0f),
-    vector3df(0.0f, 50.0f, 0.0f));
+    selector, // Collisioner
+    camera, // Effected entity
+    vector3df(60.0f, 100.0f, 60.0f), // Bounding
+    vector3df(0.0f, -10.0f, 0.0f), // Gravity
+    vector3df(0.0f, 50.0f, 0.0f)); // Translation of bounding area
   
   camera->addAnimator(anim);
   
@@ -135,6 +135,12 @@ int main(int argc, char* argv[])
   }
   
   // Uninitialize
+  light->drop();
+  camera->drop();
+  terrain->drop();
+  smgr->drop();
+  guienv->drop();
+  driver->drop();
   device->drop();
   
   return 0;

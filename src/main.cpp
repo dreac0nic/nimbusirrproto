@@ -1,5 +1,6 @@
-#include <irrlicht.h>
 #include <iostream>
+#include <sstream>
+#include <irrlicht.h>
 
 #define HM_SIZE 1024
 #define HM_SCALEXZ 40.0f
@@ -21,7 +22,7 @@ int main(int argc, char* argv[])
   video::E_DRIVER_TYPE driverType;
   
   // Initialize rendering device.
-  cout << "Please select the rendering device you would like to use:" << endl
+  cout << "Please select the rendering device you would like to use:" << endl 
        << " (a) OpenGL 3.1 (RECOMMENDED)" << endl
        << " (b) Direct3D 9.0c" << endl
        << " (c) Direct3D 8.1" << endl
@@ -126,21 +127,25 @@ int main(int argc, char* argv[])
   
   // Simple game loop.
   while(device->run()) {
+    // Setup HUD
+    wstringstream buffer; // HUD FOR ME
+    
+    buffer << driver->getName() << "\n"
+           << "Framerate: " << driver->getFPS() << "\n"
+           << "Height: " << terrain->getHeight(camera->getAbsolutePosition().X, camera->getAbsolutePosition().Z) << "\n";
+    
     driver->beginScene(true, true, SColor(255, 100, 101, 140));
     
     smgr->drawAll();
     guienv->drawAll();
     
+    // Draw text
+    guienv->getBuiltInFont()->draw(buffer.str().c_str(), rect<s32>(10, 10, 260, 22), video::SColor(255, 255, 255, 255));
+    
     driver->endScene();
   }
   
   // Uninitialize
-  light->drop();
-  camera->drop();
-  terrain->drop();
-  smgr->drop();
-  guienv->drop();
-  driver->drop();
   device->drop();
   
   return 0;

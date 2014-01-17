@@ -6,8 +6,6 @@
 #define HM_SCALEXZ 40.0f
 #define HM_SCALEY 10.0f
 
-#define LIGHT_PULSE_MODIFIER 100000
-
 using namespace std;
 using namespace irr;
 using namespace core;
@@ -67,7 +65,7 @@ int main(int argc, char* argv[])
   
   // Heightmap
   std::string heightmap;
-  cout << "Heightmap: ";
+  cout << "Heightmap (n for default): ";
   
   cin >> heightmap;
   
@@ -75,7 +73,7 @@ int main(int argc, char* argv[])
   
   heightmap = "./assets/textures/hm/" + heightmap;
   
-  cout << "Using heightmap (n for default): " << heightmap << endl << endl;
+  cout << "Using heightmap: " << heightmap << endl << endl;
   
   // Create device and exit if creation failed.
   device = createDevice(driverType, core::dimension2d<u32>(1024, 768));

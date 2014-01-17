@@ -111,6 +111,25 @@ int main(int argc, char* argv[])
   terrain->setMaterialTexture(0, driver->getTexture("./assets/textures/terrain/grass/simple1_small.jpg"));
   terrain->scaleTexture(20.0f);
   
+  // Setup water.
+  IAnimatedMesh* mesh = smgr->addHillPlaneMesh(
+    "waterHillMesh", // Mesh name
+    dimension2d<f32>(2.0f, 2.0f), // Size of hill tiles
+    dimension2d<u32>(120, 120), // Tally of the tiles
+    0, 0.0f, // Mesh material, and hill height
+    dimension2d<f32>(0.0f, 0.0f), // Number of hills in the plane
+    dimension2d<f32>(10.0f, 10.0f)); // Texture repeat count
+  
+  ISceneNode* waterSurface = smgr->addWaterSurfaceSceneNode(
+    mesh->getMesh(0), // Mesh in question
+    3.0f,   // Height
+    300.0f, // Speed
+    30.0f); // Length
+  
+  waterSurface->setPosition(vector3df(0.0f, 2000.0f, 0.0f));
+  
+  waterSurface->setMaterialType(video::EMT_REFLECTION_2_LAYER);
+  
   // Setup simple collision for the camera
   // -- Selector
   ITriangleSelector* selector = smgr->createTerrainTriangleSelector(terrain, 0);

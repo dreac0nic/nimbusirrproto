@@ -1,1 +1,7 @@
 *.*~
+.dep.inc
+*.dll
+dist/*
+nbproject/*
+build/*
+Makefile

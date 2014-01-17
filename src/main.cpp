@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include <irrlicht.h>
+#include "tileMap.h"
 
 #define HM_SIZE 1024
 #define HM_SCALEXZ 40.0f
@@ -88,7 +89,7 @@ int main(int argc, char* argv[])
   IGUIEnvironment* guienv = device->getGUIEnvironment();
   
   // Setup camera.
-  ICameraSceneNode* camera = smgr->addCameraSceneNodeFPS(0, 100.0f, 1.2f);
+  ICameraSceneNode* camera = smgr->addCameraSceneNodeFPS(0, 100.0f, 12.0f);
   
   camera->setPosition(vector3df(0.0f, (255)*HM_SCALEY/2, 0.0f));
   camera->setTarget(vector3df(HM_SIZE*HM_SCALEXZ, 0.0f, 0.0f));
@@ -111,13 +112,18 @@ int main(int argc, char* argv[])
   terrain->setMaterialTexture(0, driver->getTexture("./assets/textures/terrain/grass/simple1_small.jpg"));
   terrain->scaleTexture(20.0f);
   
+  // Setup the tilemap
+  TileMap tileMap(32, HM_SIZE*HM_SCALEXZ);
+  
+  tileMap.addToSceneGraph(0, vector3df(0,1000,0), smgr, driver, guienv);
+  
   // Setup simple collision for the camera
   // -- Selector
   ITriangleSelector* selector = smgr->createTerrainTriangleSelector(terrain, 0);
   terrain->setTriangleSelector(selector);
   
   // -- Setup Collision
-  ISceneNodeAnimator* anim = smgr->createCollisionResponseAnimator(
+  /*ISceneNodeAnimator* anim = smgr->createCollisionResponseAnimator(
     selector, // Collisioner
     camera, // Effected entity
     vector3df(60.0f, 100.0f, 60.0f), // Bounding
@@ -128,7 +134,7 @@ int main(int argc, char* argv[])
   
   // -- Cleanup
   selector->drop();
-  anim->drop();
+  anim->drop();*/
   
   // Add some super basic lighting.
   double sunDistance = HM_SIZE*HM_SCALEXZ*2;
@@ -170,6 +176,9 @@ int main(int argc, char* argv[])
     
     // Just gotta get drawn, just gotta drawn right on to here!
     guienv->getBuiltInFont()->draw(buffer.str().c_str(), rect<s32>(10, 10, 260, 22), video::SColor(255, 255, 255, 255));
+    
+    // Sigh... I admit... something similar to de-feet... all three of them
+    tileMap.update(guienv);
     
     driver->endScene();
     

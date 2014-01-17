@@ -5,3 +5,6 @@ dist/*
 nbproject/*
 build/*
 Makefile
+*.layout
+*.depend
+*.cbp

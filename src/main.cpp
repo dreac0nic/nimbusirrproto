@@ -2,6 +2,8 @@
 #include <sstream>
 #include <irrlicht.h>
 
+#include "RTSControlReceiver.h"
+
 #define CAMERA_HEIGHT 355.0f
 
 #define HM_SIZE 1024
@@ -91,11 +93,12 @@ int main(int argc, char* argv[])
   ISceneManager* smgr = device->getSceneManager();
   IGUIEnvironment* guienv = device->getGUIEnvironment();
   
-  // Setup camera.
-  ICameraSceneNode* camera = smgr->addCameraSceneNodeFPS(0, 100.0f, 1.2f);
+  // Setup controls.
+  RTSControlReceiver controls;
   
-  camera->setPosition(vector3df(0.0f, CAMERA_HEIGHT, 0.0f));
-  camera->setTarget(vector3df(0.0f, 0.0f, 250.0f));
+  // Setup camera.
+  ICameraSceneNode* camera = smgr->addCameraSceneNode(0, vector3df(0.0f, CAMERA_HEIGHT, 0.0f), vector3df(0.0f, 0.0f, 250.0f));
+  
   camera->setFarValue(2400.0f);
   
   device->getCursorControl()->setVisible(false);
@@ -107,8 +110,8 @@ int main(int argc, char* argv[])
     vector3df(-HM_SIZE*HM_SCALEXZ/2, 0.0f, -HM_SIZE*HM_SCALEXZ/2), // Node Position
     vector3df(0.0f, 0.0f, 0.0f), // Rotation
     vector3df(HM_SCALEXZ, HM_SCALEY, HM_SCALEXZ), // Scaling
-    video::SColor(25, 25, 25, 255), // Vertex Color
-    4, // Maximum LOD
+    video::SColor(25, 25, 25, 100), // Vertex Color
+    5, // Maximum LOD
     ETPS_33, // Patch size
     8); // Smoothing factor
   
@@ -127,14 +130,15 @@ int main(int argc, char* argv[])
   ISceneNode* waterSurface = smgr->addWaterSurfaceSceneNode(
     mesh->getMesh(0), // Mesh in question
     2.0f,   // Height
-    250.0f,  // Speed
-    30.0f); // Length
+    500.0f,  // Speed
+    300.0f); // Length
   
   waterSurface->setPosition(vector3df(0.0f, 80.0f, 0.0f));
   
-  waterSurface->setMaterialTexture(0, driver->getTexture("./assets/textures/terrain/water/shallow1_clear.jpg"));
+  waterSurface->setMaterialTexture(0, driver->getTexture("./assets/textures/terrain/water/shallow1_clear.png"));
+  waterSurface->setMaterialTexture(1, driver->getTexture("./assets/textures/terrain/grass/simple1_small.jpg"));
   
-  waterSurface->setMaterialType(video::EMT_REFLECTION_2_LAYER);
+  waterSurface->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
   
   // Setup simple collision for the camera
   // -- Selector

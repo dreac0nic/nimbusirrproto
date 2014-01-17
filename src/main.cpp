@@ -2,9 +2,13 @@
 #include <sstream>
 #include <irrlicht.h>
 
+#define CAMERA_HEIGHT 355.0f
+
 #define HM_SIZE 1024
-#define HM_SCALEXZ 40.0f
-#define HM_SCALEY 10.0f
+#define HM_SCALEXZ 2.0f
+#define HM_SCALEY 1.0f
+
+#define WATER_TILESIZE 50.0f
 
 using namespace std;
 using namespace irr;
@@ -90,23 +94,23 @@ int main(int argc, char* argv[])
   // Setup camera.
   ICameraSceneNode* camera = smgr->addCameraSceneNodeFPS(0, 100.0f, 1.2f);
   
-  camera->setPosition(vector3df(0.0f, (255)*HM_SCALEY/2, 0.0f));
-  camera->setTarget(vector3df(HM_SIZE*HM_SCALEXZ, 0.0f, 0.0f));
-  camera->setFarValue(42000.0f);
+  camera->setPosition(vector3df(0.0f, CAMERA_HEIGHT, 0.0f));
+  camera->setTarget(vector3df(0.0f, 0.0f, 250.0f));
+  camera->setFarValue(2400.0f);
   
   device->getCursorControl()->setVisible(false);
   
   // Setup terrain.
   ITerrainSceneNode* terrain = smgr->addTerrainSceneNode(
-							 heightmap.c_str(), // Asset
+    heightmap.c_str(), // Asset
     0, -1, // Parent ID, Node ID
     vector3df(-HM_SIZE*HM_SCALEXZ/2, 0.0f, -HM_SIZE*HM_SCALEXZ/2), // Node Position
     vector3df(0.0f, 0.0f, 0.0f), // Rotation
     vector3df(HM_SCALEXZ, HM_SCALEY, HM_SCALEXZ), // Scaling
     video::SColor(25, 25, 25, 255), // Vertex Color
-    3, // Maximum LOD
-    ETPS_17, // Patch size
-    4); // Smoothing factor
+    4, // Maximum LOD
+    ETPS_33, // Patch size
+    8); // Smoothing factor
   
   terrain->setMaterialTexture(0, driver->getTexture("./assets/textures/terrain/grass/simple1_small.jpg"));
   terrain->scaleTexture(20.0f);
@@ -114,19 +118,21 @@ int main(int argc, char* argv[])
   // Setup water.
   IAnimatedMesh* mesh = smgr->addHillPlaneMesh(
     "waterHillMesh", // Mesh name
-    dimension2d<f32>(2.0f, 2.0f), // Size of hill tiles
-    dimension2d<u32>(120, 120), // Tally of the tiles
+    dimension2d<f32>(512.0f, 512.0f), // Size of hill tiles
+    dimension2d<u32>((int)(HM_SIZE*HM_SCALEXZ/512), (int)(HM_SIZE*HM_SCALEXZ/512)), // Tally of the tiles
     0, 0.0f, // Mesh material, and hill height
     dimension2d<f32>(0.0f, 0.0f), // Number of hills in the plane
     dimension2d<f32>(10.0f, 10.0f)); // Texture repeat count
   
   ISceneNode* waterSurface = smgr->addWaterSurfaceSceneNode(
     mesh->getMesh(0), // Mesh in question
-    3.0f,   // Height
-    300.0f, // Speed
+    2.0f,   // Height
+    250.0f,  // Speed
     30.0f); // Length
   
-  waterSurface->setPosition(vector3df(0.0f, 2000.0f, 0.0f));
+  waterSurface->setPosition(vector3df(0.0f, 80.0f, 0.0f));
+  
+  waterSurface->setMaterialTexture(0, driver->getTexture("./assets/textures/terrain/water/shallow1_clear.jpg"));
   
   waterSurface->setMaterialType(video::EMT_REFLECTION_2_LAYER);
   

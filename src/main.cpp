@@ -10,6 +10,8 @@
 #define CAMERA_ACCEL    1.0f
 #define CAMERA_SLOWDOWN 0.8f
 
+#define EDGE_TOLERENCE 15
+
 #define HM_SIZE 1024
 #define HM_SCALEXZ 2.0f
 #define HM_SCALEY 1.0f
@@ -109,8 +111,6 @@ int main(int argc, char* argv[])
 
   camera->setFarValue(2400.0f);
 
-  device->getCursorControl()->setVisible(false);
-
   // Setup terrain.
   ITerrainSceneNode* terrain = smgr->addTerrainSceneNode(
     heightmap.c_str(), // Asset
@@ -190,9 +190,17 @@ int main(int argc, char* argv[])
   ILightSceneNode* cameraLight = smgr->addLightSceneNode(0, vector3df(0.0f, 0.0f, 0.0f), video::SColor(255, 247, 247, 87), 1800.0f);
 
   // Game Variables
+  bool trapCursor = true;
+  bool cursorVisible = true;
+  bool lastKeys[KEY_KEY_CODES_COUNT];
+  
   vector3df camVelocity(0.0f, 0.0f, 0.0f);
   unsigned long long int tick = 0;
-
+  
+  // Setup
+  for(u32 key = 0; key < KEY_KEY_CODES_COUNT; ++key)
+    lastKeys[key] = false;
+  
   // Simple game loop.
   while(device->run()) {
       if(device->isWindowFocused()){
@@ -204,7 +212,16 @@ int main(int argc, char* argv[])
            << "Heightmap Used: " << heightmap.c_str() << endl
            << "Framerate: " << driver->getFPS() << endl
            << "Height: " << terrain->getHeight(camera->getAbsolutePosition().X, camera->getAbsolutePosition().Z) << endl;
-
+    
+    // Check debug controls
+    if(controls.IsKeyDown(KEY_F9) && !lastKeys[KEY_F9])
+      trapCursor = !trapCursor;
+    else if(controls.IsKeyDown(KEY_F10) && !lastKeys[KEY_F10]) {
+      cursorVisible = !cursorVisible;
+      
+      device->getCursorControl()->setVisible(cursorVisible);
+    }
+    
     // Controls
     buffer << endl
 	   << "User Input --" << endl
@@ -212,21 +229,55 @@ int main(int argc, char* argv[])
 	   << controls.IsKeyDown(KEY_UP) << ", "
 	   << controls.IsKeyDown(KEY_DOWN) << ", "
 	   << controls.IsKeyDown(KEY_LEFT) << ", "
-	   << controls.IsKeyDown(KEY_RIGHT) << endl;
-
+	   << controls.IsKeyDown(KEY_RIGHT) << endl
+	   << endl
+	   << "Cursor Screen Position: " << device->getCursorControl()->getPosition().X << ", " << device->getCursorControl()->getPosition().Y << endl
+	   << "Trap Cursor: " << (trapCursor ? "true" : "false") << "[" << (cursorVisible ? "true" : "false") << "]" << endl;
+    
+    // Trap cursor
+    if(trapCursor) {
+      bool changed = false;
+      vector2d<int> cursorPos = device->getCursorControl()->getPosition();
+      int height = driver->getScreenSize().Height;
+      int width = driver->getScreenSize().Width;
+      
+      if(cursorPos.X < 0) {
+        cursorPos.X = 0;
+	
+	changed = true;
+      } else if(cursorPos.X > width) {
+	cursorPos.X = width;
+	
+	changed = true;
+      }
+      
+      if(cursorPos.Y < 0) {
+	cursorPos.Y = 0;
+	
+	changed = true;
+      } else if(cursorPos.Y > height) {
+	cursorPos.Y = height;
+	
+	changed = true;
+      }
+      
+      if(changed)
+	device->getCursorControl()->setPosition(cursorPos);
+    }
+    
     // Camera movement
-    if(controls.IsKeyDown(KEY_UP)) {
+    if(controls.IsKeyDown(KEY_UP) || device->getCursorControl()->getPosition().Y <= EDGE_TOLERENCE) {
       camVelocity.Z = (camVelocity.Z > CAMERA_MAXVELO ? CAMERA_MAXVELO : camVelocity.Z + CAMERA_ACCEL);
-    } else if(controls.IsKeyDown(KEY_DOWN)) {
+    } else if(controls.IsKeyDown(KEY_DOWN) || device->getCursorControl()->getPosition().Y >= driver->getScreenSize().Height - EDGE_TOLERENCE) {
       camVelocity.Z = (camVelocity.Z < -CAMERA_MAXVELO ? -CAMERA_MAXVELO : camVelocity.Z - CAMERA_ACCEL);
     } else {
       if(abs(camVelocity.Z) < CAMERA_SLOWDOWN) camVelocity.Z = 0;
       else camVelocity.Z += (camVelocity.Z > 0 ? -1 : 1)*CAMERA_SLOWDOWN;
     }
-
-    if(controls.IsKeyDown(KEY_RIGHT)) {
+    
+    if(controls.IsKeyDown(KEY_RIGHT) || device->getCursorControl()->getPosition().X >= driver->getScreenSize().Width - EDGE_TOLERENCE) {
       camVelocity.X = (camVelocity.X > CAMERA_MAXVELO ? CAMERA_MAXVELO : camVelocity.X + CAMERA_ACCEL);
-    } else if(controls.IsKeyDown(KEY_LEFT)) {
+    } else if(controls.IsKeyDown(KEY_LEFT) || device->getCursorControl()->getPosition().X <= EDGE_TOLERENCE) {
       camVelocity.X = (camVelocity.X < -CAMERA_MAXVELO ? -CAMERA_MAXVELO : camVelocity.X - CAMERA_ACCEL);
     } else {
       if(abs(camVelocity.X) < CAMERA_SLOWDOWN) camVelocity.X = 0;
@@ -258,6 +309,10 @@ int main(int argc, char* argv[])
 
     // Increaase the tick.
     ++tick;
+    
+    // Cycle keys
+    for(u32 key = 0; key < KEY_KEY_CODES_COUNT; ++key)
+      lastKeys[key] = controls.IsKeyDown((EKEY_CODE)key);
   }
   }
 

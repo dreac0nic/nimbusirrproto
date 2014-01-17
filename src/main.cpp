@@ -7,12 +7,14 @@
 #define CAMERA_HEIGHT   355.0f
 #define CAMERA_MAXVELO  5.0f
 #define CAMERA_ACCEL    1.0f
+#define CAMERA_SLOWDOWN 0.8f
 
 #define HM_SIZE 1024
 #define HM_SCALEXZ 2.0f
 #define HM_SCALEY 1.0f
 
 #define WATER_TILESIZE 50.0f
+#define WATER_TILEFACTOR 8
 
 using namespace std;
 using namespace irr;
@@ -126,8 +128,8 @@ int main(int argc, char* argv[])
   // Setup water.
   IAnimatedMesh* mesh = smgr->addHillPlaneMesh(
     "waterHillMesh", // Mesh name
-    dimension2d<f32>(512.0f, 512.0f), // Size of hill tiles
-    dimension2d<u32>((int)(HM_SIZE*HM_SCALEXZ/512), (int)(HM_SIZE*HM_SCALEXZ/512)), // Tally of the tiles
+    dimension2d<f32>(512.0f/WATER_TILEFACTOR, 512.0f/WATER_TILEFACTOR), // Size of hill tiles
+    dimension2d<u32>((int)(HM_SIZE*HM_SCALEXZ/512*WATER_TILEFACTOR), (int)(HM_SIZE*HM_SCALEXZ/512*WATER_TILEFACTOR)), // Tally of the tiles
     0, 0.0f, // Mesh material, and hill height
     dimension2d<f32>(0.0f, 0.0f), // Number of hills in the plane
     dimension2d<f32>(10.0f, 10.0f)); // Texture repeat count
@@ -146,7 +148,7 @@ int main(int argc, char* argv[])
   waterSurface->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
   
   // -- Test with water wireframe
-  waterSurface->setMaterialFlag(video::EMF_WIREFRAME, true);
+  // waterSurface->setMaterialFlag(video::EMF_WIREFRAME, true);
   
   // Setup simple collision for the camera
   // -- Selector
@@ -187,19 +189,6 @@ int main(int argc, char* argv[])
   
   // Simple game loop.
   while(device->run()) {
-    // Camera movement
-    {
-      vector3df camPosition = camera->getPosition();
-      
-      if(controls.IsKeyDown(KEY_UP)) camPosition.Z += CAMERA_MAXVELO;
-      else if(controls.IsKeyDown(KEY_DOWN)) camPosition.Z -= CAMERA_MAXVELO;
-      
-      if(controls.IsKeyDown(KEY_LEFT)) camPosition.X += CAMERA_MAXVELO;
-      else if(controls.IsKeyDown(KEY_RIGHT)) camPosition.X -= CAMERA_MAXVELO;
-      
-      camera->setPosition(camPosition);
-    }
-    
     // Setup HUD
     wstringstream buffer; // HUD FOR ME
     
@@ -208,6 +197,26 @@ int main(int argc, char* argv[])
            << "Heightmap Used: " << heightmap.c_str() << "\n"
            << "Framerate: " << driver->getFPS() << "\n"
            << "Height: " << terrain->getHeight(camera->getAbsolutePosition().X, camera->getAbsolutePosition().Z) << "\n";
+    
+    // Camera movement
+    {
+      if(controls.IsKeyDown(KEY_UP)) camVelocity.Z = (camVelocity.Z > CAMERA_MAXVELO ? CAMERA_MAXVELO : camVelocity.Z + CAMERA_ACCEL);
+      else if(controls.IsKeyDown(KEY_DOWN)) camVelocity.Z = (camVelocity.Z < -CAMERA_MAXVELO ? -CAMERA_MAXVELO : camVelocity.Z - CAMERA_ACCEL);
+      else {
+	if(abs(camVelocity.Z) < CAMERA_SLOWDOWN) camVelocity.Z = 0;
+	else camVelocity.Z += (camVelocity.Z > 0 ? -1 : 1)*CAMERA_SLOWDOWN;
+      }
+      
+      if(controls.IsKeyDown(KEY_RIGHT)) camVelocity.X = (camVelocity.X > CAMERA_MAXVELO ? CAMERA_MAXVELO : camVelocity.X + CAMERA_ACCEL);
+      else if(controls.IsKeyDown(KEY_LEFT)) camVelocity.X = (camVelocity.X < -CAMERA_MAXVELO ? CAMERA_MAXVELO : camVelocity.X - CAMERA_ACCEL);
+      else {
+	if(abs(camVelocity.X) < CAMERA_SLOWDOWN) camVelocity.X = 0;
+	else camVelocity.X += (camVelocity.X > 0 ? -1 : 1)*CAMERA_SLOWDOWN;
+      }
+      
+      camera->setPosition(camera->getPosition() + camVelocity);
+      camera->setTarget(camera->getTarget() + camVelocity);
+    }
     
     // Update light
     // light->setRadius(HM_SIZE*HM_SCALEXZ*1.3/2 + HM_SIZE*HM_SCALEXZ*1.2*(tick%LIGHT_PULSE_MODIFIER));

@@ -10,7 +10,7 @@ class TileMap
 public:
     TileMap();
     TileMap(int tileDim, double mapDim);
-    virtual ~TileMap() {}
+    virtual ~TileMap();
     
     void addToSceneGraph(
         scene::ISceneNode* parent,
@@ -19,11 +19,14 @@ public:
         video::IVideoDriver* driver,
         gui::IGUIEnvironment* guienv);
     
-    void update(gui::IGUIEnvironment* guienv);
+    void init(int tileDim, double mapDim);
+    void update(gui::IGUIEnvironment* guienv, video::IVideoDriver* driver);
 private:
     int tileDim, mapDim;
     
     scene::ISceneNode* root;
+    
+    core::vector2df** vectorField;
 };
 
 #endif	/* TILEMAP_H */

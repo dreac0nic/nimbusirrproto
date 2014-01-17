@@ -179,7 +179,7 @@ int main(int argc, char* argv[])
     guienv->getBuiltInFont()->draw(buffer.str().c_str(), rect<s32>(10, 10, 260, 22), video::SColor(255, 255, 255, 255));
     
     // Sigh... I admit... something similar to de-feet... all three of them
-    tileMap.update(guienv);
+    tileMap.update(guienv, driver);
     
     driver->endScene();
     

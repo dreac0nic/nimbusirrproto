@@ -199,28 +199,22 @@ int main(int argc, char* argv[])
            << "Height: " << terrain->getHeight(camera->getAbsolutePosition().X, camera->getAbsolutePosition().Z) << "\n";
     
     // Camera movement
-    {
-      if(controls.IsKeyDown(KEY_UP)) camVelocity.Z = (camVelocity.Z > CAMERA_MAXVELO ? CAMERA_MAXVELO : camVelocity.Z + CAMERA_ACCEL);
-      else if(controls.IsKeyDown(KEY_DOWN)) camVelocity.Z = (camVelocity.Z < -CAMERA_MAXVELO ? -CAMERA_MAXVELO : camVelocity.Z - CAMERA_ACCEL);
-      else {
-	if(abs(camVelocity.Z) < CAMERA_SLOWDOWN) camVelocity.Z = 0;
-	else camVelocity.Z += (camVelocity.Z > 0 ? -1 : 1)*CAMERA_SLOWDOWN;
-      }
-      
-      if(controls.IsKeyDown(KEY_RIGHT)) camVelocity.X = (camVelocity.X > CAMERA_MAXVELO ? CAMERA_MAXVELO : camVelocity.X + CAMERA_ACCEL);
-      else if(controls.IsKeyDown(KEY_LEFT)) camVelocity.X = (camVelocity.X < -CAMERA_MAXVELO ? CAMERA_MAXVELO : camVelocity.X - CAMERA_ACCEL);
-      else {
-	if(abs(camVelocity.X) < CAMERA_SLOWDOWN) camVelocity.X = 0;
-	else camVelocity.X += (camVelocity.X > 0 ? -1 : 1)*CAMERA_SLOWDOWN;
-      }
-      
-      camera->setPosition(camera->getPosition() + camVelocity);
-      camera->setTarget(camera->getTarget() + camVelocity);
+    if(controls.IsKeyDown(KEY_UP)) camVelocity.Z = (camVelocity.Z > CAMERA_MAXVELO ? CAMERA_MAXVELO : camVelocity.Z + CAMERA_ACCEL);
+    else if(controls.IsKeyDown(KEY_DOWN)) camVelocity.Z = (camVelocity.Z < -CAMERA_MAXVELO ? -CAMERA_MAXVELO : camVelocity.Z - CAMERA_ACCEL);
+    else {
+      if(abs(camVelocity.Z) < CAMERA_SLOWDOWN) camVelocity.Z = 0;
+      else camVelocity.Z += (camVelocity.Z > 0 ? -1 : 1)*CAMERA_SLOWDOWN;
     }
     
-    // Update light
-    // light->setRadius(HM_SIZE*HM_SCALEXZ*1.3/2 + HM_SIZE*HM_SCALEXZ*1.2*(tick%LIGHT_PULSE_MODIFIER));
-    // cameraLight->setPosition(vector3df(camera->getAbsolutePosition().X, camera->getAbsolutePosition().Y, camera->getAbsolutePosition().Z));
+    if(controls.IsKeyDown(KEY_RIGHT)) camVelocity.X = (camVelocity.X > CAMERA_MAXVELO ? CAMERA_MAXVELO : camVelocity.X + CAMERA_ACCEL);
+    else if(controls.IsKeyDown(KEY_LEFT)) camVelocity.X = (camVelocity.X < -CAMERA_MAXVELO ? CAMERA_MAXVELO : camVelocity.X - CAMERA_ACCEL);
+    else {
+      if(abs(camVelocity.X) < CAMERA_SLOWDOWN) camVelocity.X = 0;
+      else camVelocity.X += (camVelocity.X > 0 ? -1 : 1)*CAMERA_SLOWDOWN;
+    }
+    
+    camera->setPosition(camera->getPosition() + camVelocity);
+    camera->setTarget(camera->getTarget() + camVelocity);
     
     // SO YOU THINK YOU CAN STREAM ME AND RENDER THE SCENE
     driver->beginScene(true, true, SColor(255, 100, 101, 140));

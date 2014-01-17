@@ -89,7 +89,8 @@ void TileMap::addToSceneGraph(
 
         	position << "Generating (" << j << ", " << i << ")\n";
 
-            /*this->tileGrid[j][i] = smgr->addMeshSceneNode(
+			///* Uncomment/comment this block comment to toggle the test grid off/on
+            this->tileGrid[j][i] = smgr->addMeshSceneNode(
                     mesh,
                     this->root,
                     j*100 + i, // id = x*100 + y
@@ -129,9 +130,9 @@ void TileMap::addToSceneGraph(
 			cloudMesh,
 			this->root,
 			-1,
-			core::vector3df(rand() % mapDim - mapDim/2, this->root->getPosition().Y + 100, rand() % mapDim - mapDim/2),
+			core::vector3df(rand() % mapDim - mapDim/2, this->root->getPosition().Y + 50, rand() % mapDim - mapDim/2),
 			core::vector3df(0,0,0),
-			core::vector3df(100.0f,100.0f,100.0f)));
+			core::vector3df(20.0f,20.0f,20.0f)));
 	this->clouds[clouds.size()-1]->setMaterialFlag(EMF_LIGHTING, false);
 }
 
@@ -139,33 +140,31 @@ void TileMap::update(gui::IGUIEnvironment* guienv, IVideoDriver* driver)
 {
     stringstream buffer;
 
-    buffer << "TileMap Section\n"
+    buffer << "TileMap --\n"
             << "mapDim: " << this->mapDim << "\n"
             << "tileDim: " << this->tileDim << "\n";
-	for(int i = 0; i < this->clouds.size(); i++)
-	{
-		buffer << "Cloud " << i+1 << ": (" << this->clouds[i]->getPosition().X
-				<< ", " << this->clouds[i]->getPosition().Y
-				<< ", " << this->clouds[i]->getPosition().Z << ")\n";
-	}
 
     core::vector3df position = this->root->getPosition();
 
 	// Update the cloud position according to the vector map
     for(int i = 0; i < this->clouds.size(); i++)
     {
+    	buffer << "Cloud " << i+1 << ": (" << this->clouds[i]->getAbsolutePosition().X
+				<< ", " << this->clouds[i]->getAbsolutePosition().Y
+				<< ", " << this->clouds[i]->getAbsolutePosition().Z << ")\n";
+
     	core::vector3df cloudPosition = this->clouds[i]->getPosition();
 
     	int x = (int)((cloudPosition.X + mapDim/2) * tileDim)/mapDim;
     	int y = (int)((cloudPosition.Z + mapDim/2) * tileDim)/mapDim;
 
-    	buffer << "Cloud Tile: (" << x << ", " << y <<"\n";
+    	buffer << "Cloud " << i+1 << " Tile: (" << x << ", " << y <<")\n";
 
     }
 
     guienv->getBuiltInFont()->draw(
         buffer.str().c_str(),
-        irr::core::rect<irr::s32>(10,70,250,20),
+        irr::core::rect<irr::s32>(10,130,250,20),
         irr::video::SColor(255,255,255,255));
 
     for(int i = 0; i < tileDim; i++)

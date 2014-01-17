@@ -3,9 +3,19 @@
 #include <irrlicht.h>
 #include "tileMap.h"
 
+#include "RTSControlReceiver.h"
+
+#define CAMERA_HEIGHT   355.0f
+#define CAMERA_MAXVELO  5.0f
+#define CAMERA_ACCEL    1.0f
+#define CAMERA_SLOWDOWN 0.8f
+
 #define HM_SIZE 1024
-#define HM_SCALEXZ 40.0f
-#define HM_SCALEY 10.0f
+#define HM_SCALEXZ 2.0f
+#define HM_SCALEY 1.0f
+
+#define WATER_TILESIZE 50.0f
+#define WATER_TILEFACTOR 8
 
 using namespace std;
 using namespace irr;
@@ -20,6 +30,12 @@ int main(int argc, char* argv[])
   // VARIABLES
   char chbuffer;
   IrrlichtDevice* device;
+  IVideoDriver* driver;
+  ISceneManager* smgr;
+  IGUIEnvironment* guienv;
+
+  // Setup controls.
+  RTSControlReceiver controls;
   video::E_DRIVER_TYPE driverType;
 
   // Initialize rendering device.
@@ -77,45 +93,63 @@ int main(int argc, char* argv[])
   cout << "Using heightmap: " << heightmap << endl << endl;
 
   // Create device and exit if creation failed.
-  device = createDevice(driverType, core::dimension2d<u32>(1024, 768));
+  device = createDevice(driverType, core::dimension2d<u32>(1024, 768), 16, false, false, false, &controls);
 
   if(device == 0) return 1;
 
   // Setup device.
   device->setWindowCaption(L"IRRLICHT WINDOW");
 
-  IVideoDriver* driver = device->getVideoDriver();
-  ISceneManager* smgr = device->getSceneManager();
-  IGUIEnvironment* guienv = device->getGUIEnvironment();
+  driver = device->getVideoDriver();
+  smgr = device->getSceneManager();
+  guienv = device->getGUIEnvironment();
 
   // Setup camera.
-  ICameraSceneNode* camera = smgr->addCameraSceneNodeFPS(0, 100.0f, 12.0f);
+  ICameraSceneNode* camera = smgr->addCameraSceneNode(0, vector3df(0.0f, CAMERA_HEIGHT, 0.0f), vector3df(0.0f, 0.0f, 250.0f));
 
-  camera->setPosition(vector3df(0.0f, (255)*HM_SCALEY/2, 0.0f));
-  camera->setTarget(vector3df(HM_SIZE*HM_SCALEXZ, 0.0f, 0.0f));
-  camera->setFarValue(42000.0f);
+  camera->setFarValue(2400.0f);
 
   device->getCursorControl()->setVisible(false);
 
   // Setup terrain.
   ITerrainSceneNode* terrain = smgr->addTerrainSceneNode(
-							 heightmap.c_str(), // Asset
+    heightmap.c_str(), // Asset
     0, -1, // Parent ID, Node ID
     vector3df(-HM_SIZE*HM_SCALEXZ/2, 0.0f, -HM_SIZE*HM_SCALEXZ/2), // Node Position
     vector3df(0.0f, 0.0f, 0.0f), // Rotation
     vector3df(HM_SCALEXZ, HM_SCALEY, HM_SCALEXZ), // Scaling
-    video::SColor(25, 25, 25, 255), // Vertex Color
-    3, // Maximum LOD
-    ETPS_17, // Patch size
-    4); // Smoothing factor
+    video::SColor(25, 25, 25, 100), // Vertex Color
+    5, // Maximum LOD
+    ETPS_33, // Patch size
+    8); // Smoothing factor
 
   terrain->setMaterialTexture(0, driver->getTexture("./assets/textures/terrain/grass/simple1_small.jpg"));
   terrain->scaleTexture(20.0f);
 
-  // Setup the tilemap
-  TileMap tileMap(32, HM_SIZE*HM_SCALEXZ);
+  // Setup water.
+  IAnimatedMesh* mesh = smgr->addHillPlaneMesh(
+    "waterHillMesh", // Mesh name
+    dimension2d<f32>(512.0f/WATER_TILEFACTOR, 512.0f/WATER_TILEFACTOR), // Size of hill tiles
+    dimension2d<u32>((int)(HM_SIZE*HM_SCALEXZ/512*WATER_TILEFACTOR), (int)(HM_SIZE*HM_SCALEXZ/512*WATER_TILEFACTOR)), // Tally of the tiles
+    0, 0.0f, // Mesh material, and hill height
+    dimension2d<f32>(0.0f, 0.0f), // Number of hills in the plane
+    dimension2d<f32>(10.0f, 10.0f)); // Texture repeat count
 
-  tileMap.addToSceneGraph(0, vector3df(0,1000,0), smgr, driver, guienv);
+  ISceneNode* waterSurface = smgr->addWaterSurfaceSceneNode(
+    mesh->getMesh(0), // Mesh in question
+    2.0f,   // Height
+    500.0f,  // Speed
+    300.0f); // Length
+
+  waterSurface->setPosition(vector3df(0.0f, 80.0f, 0.0f));
+
+  waterSurface->setMaterialTexture(0, driver->getTexture("./assets/textures/terrain/water/shallow1_clear.png"));
+  waterSurface->setMaterialTexture(1, driver->getTexture("./assets/textures/terrain/grass/simple1_small.jpg"));
+
+  waterSurface->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
+
+  // -- Test with water wireframe
+  // waterSurface->setMaterialFlag(video::EMF_WIREFRAME, true);
 
   // Setup simple collision for the camera
   // -- Selector
@@ -136,6 +170,11 @@ int main(int argc, char* argv[])
   selector->drop();
   anim->drop();*/
 
+  // Setup the tilemap
+  TileMap tileMap(32, HM_SIZE*HM_SCALEXZ);
+
+  tileMap.addToSceneGraph(0, vector3df(0,70,0), smgr, driver, guienv);
+
   // Add some super basic lighting.
   double sunDistance = HM_SIZE*HM_SCALEXZ*2;
   double sunFactor = 14.4;
@@ -150,6 +189,8 @@ int main(int argc, char* argv[])
 
   ILightSceneNode* cameraLight = smgr->addLightSceneNode(0, vector3df(0.0f, 0.0f, 0.0f), video::SColor(255, 247, 247, 87), 1800.0f);
 
+  // Game Variables
+  vector3df camVelocity(0.0f, 0.0f, 0.0f);
   unsigned long long int tick = 0;
 
   // Simple game loop.
@@ -159,15 +200,46 @@ int main(int argc, char* argv[])
     wstringstream buffer; // HUD FOR ME
 
     // FOR MEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE ...
-    buffer << driver->getName() << "\n"
-           << "Heightmap Used: " << heightmap.c_str() << "\n"
-           << "Framerate: " << driver->getFPS() << "\n"
-           << "Height: " << terrain->getHeight(camera->getAbsolutePosition().X, camera->getAbsolutePosition().Z) << "\n"
-           << "Camera: (" << camera->getPosition().X << ", "  << camera->getPosition().Y << ", " << camera->getPosition().Z << ")\n";
+    buffer << driver->getName() << endl
+           << "Heightmap Used: " << heightmap.c_str() << endl
+           << "Framerate: " << driver->getFPS() << endl
+           << "Height: " << terrain->getHeight(camera->getAbsolutePosition().X, camera->getAbsolutePosition().Z) << endl;
 
-    // Update light
-    // light->setRadius(HM_SIZE*HM_SCALEXZ*1.3/2 + HM_SIZE*HM_SCALEXZ*1.2*(tick%LIGHT_PULSE_MODIFIER));
-    // cameraLight->setPosition(vector3df(camera->getAbsolutePosition().X, camera->getAbsolutePosition().Y, camera->getAbsolutePosition().Z));
+    // Controls
+    buffer << endl
+	   << "User Input --" << endl
+	   << "Arrow Keys [UDLR]: "
+	   << controls.IsKeyDown(KEY_UP) << ", "
+	   << controls.IsKeyDown(KEY_DOWN) << ", "
+	   << controls.IsKeyDown(KEY_LEFT) << ", "
+	   << controls.IsKeyDown(KEY_RIGHT) << endl;
+
+    // Camera movement
+    if(controls.IsKeyDown(KEY_UP)) {
+      camVelocity.Z = (camVelocity.Z > CAMERA_MAXVELO ? CAMERA_MAXVELO : camVelocity.Z + CAMERA_ACCEL);
+    } else if(controls.IsKeyDown(KEY_DOWN)) {
+      camVelocity.Z = (camVelocity.Z < -CAMERA_MAXVELO ? -CAMERA_MAXVELO : camVelocity.Z - CAMERA_ACCEL);
+    } else {
+      if(abs(camVelocity.Z) < CAMERA_SLOWDOWN) camVelocity.Z = 0;
+      else camVelocity.Z += (camVelocity.Z > 0 ? -1 : 1)*CAMERA_SLOWDOWN;
+    }
+
+    if(controls.IsKeyDown(KEY_RIGHT)) {
+      camVelocity.X = (camVelocity.X > CAMERA_MAXVELO ? CAMERA_MAXVELO : camVelocity.X + CAMERA_ACCEL);
+    } else if(controls.IsKeyDown(KEY_LEFT)) {
+      camVelocity.X = (camVelocity.X < -CAMERA_MAXVELO ? -CAMERA_MAXVELO : camVelocity.X - CAMERA_ACCEL);
+    } else {
+      if(abs(camVelocity.X) < CAMERA_SLOWDOWN) camVelocity.X = 0;
+      else camVelocity.X += (camVelocity.X > 0 ? -1 : 1)*CAMERA_SLOWDOWN;
+    }
+
+    buffer << endl
+	   << "Camera --" << endl
+	   << "Position: " << camera->getAbsolutePosition().X << ", " << camera->getAbsolutePosition().Y << ", " << camera->getAbsolutePosition().Z << ": " << camera->getTarget().X << ", " << camera->getTarget().Y << ", " << camera->getTarget().Z << endl
+           << "Velocity: " << camVelocity.X << ", " << camVelocity.Y << ", " << camVelocity.Z << endl;
+
+    camera->setPosition(camera->getPosition() + camVelocity);
+    camera->setTarget(camera->getTarget() + camVelocity);
 
     // SO YOU THINK YOU CAN STREAM ME AND RENDER THE SCENE
     driver->beginScene(true, true, SColor(255, 100, 101, 140));

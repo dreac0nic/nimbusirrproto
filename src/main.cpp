@@ -193,27 +193,43 @@ int main(int argc, char* argv[])
     wstringstream buffer; // HUD FOR ME
     
     // FOR MEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE ...
-    buffer << driver->getName() << "\n"
-           << "Heightmap Used: " << heightmap.c_str() << "\n"
-           << "Framerate: " << driver->getFPS() << "\n"
-           << "Height: " << terrain->getHeight(camera->getAbsolutePosition().X, camera->getAbsolutePosition().Z) << "\n";
+    buffer << driver->getName() << endl
+           << "Heightmap Used: " << heightmap.c_str() << endl
+           << "Framerate: " << driver->getFPS() << endl
+           << "Height: " << terrain->getHeight(camera->getAbsolutePosition().X, camera->getAbsolutePosition().Z) << endl;
+    
+    // Controls
+    buffer << endl
+	   << "User Input --" << endl
+	   << "Arrow Keys [UDLR]: "
+	   << controls.IsKeyDown(KEY_UP) << ", "
+	   << controls.IsKeyDown(KEY_DOWN) << ", "
+	   << controls.IsKeyDown(KEY_LEFT) << ", "
+	   << controls.IsKeyDown(KEY_RIGHT) << endl;
     
     // Camera movement
-    if(controls.IsKeyDown(KEY_UP)) camVelocity.Z = (camVelocity.Z > CAMERA_MAXVELO ? CAMERA_MAXVELO : camVelocity.Z + CAMERA_ACCEL);
-    else if(controls.IsKeyDown(KEY_DOWN)) camVelocity.Z = (camVelocity.Z < -CAMERA_MAXVELO ? -CAMERA_MAXVELO : camVelocity.Z - CAMERA_ACCEL);
-    else {
+    if(controls.IsKeyDown(KEY_UP)) {
+      camVelocity.Z = (camVelocity.Z > CAMERA_MAXVELO ? CAMERA_MAXVELO : camVelocity.Z + CAMERA_ACCEL);
+    } else if(controls.IsKeyDown(KEY_DOWN)) {
+      camVelocity.Z = (camVelocity.Z < -CAMERA_MAXVELO ? -CAMERA_MAXVELO : camVelocity.Z - CAMERA_ACCEL);
+    } else {
       if(abs(camVelocity.Z) < CAMERA_SLOWDOWN) camVelocity.Z = 0;
       else camVelocity.Z += (camVelocity.Z > 0 ? -1 : 1)*CAMERA_SLOWDOWN;
     }
     
-    if(controls.IsKeyDown(KEY_RIGHT)) camVelocity.X = (camVelocity.X > CAMERA_MAXVELO ? CAMERA_MAXVELO : camVelocity.X + CAMERA_ACCEL);
-    else if(controls.IsKeyDown(KEY_LEFT)) camVelocity.X = (camVelocity.X < -CAMERA_MAXVELO ? CAMERA_MAXVELO : camVelocity.X - CAMERA_ACCEL);
-    else {
+    if(controls.IsKeyDown(KEY_RIGHT)) {
+      camVelocity.X = (camVelocity.X > CAMERA_MAXVELO ? CAMERA_MAXVELO : camVelocity.X + CAMERA_ACCEL);
+    } else if(controls.IsKeyDown(KEY_LEFT)) {
+      camVelocity.X = (camVelocity.X < -CAMERA_MAXVELO ? -CAMERA_MAXVELO : camVelocity.X - CAMERA_ACCEL);
+    } else {
       if(abs(camVelocity.X) < CAMERA_SLOWDOWN) camVelocity.X = 0;
       else camVelocity.X += (camVelocity.X > 0 ? -1 : 1)*CAMERA_SLOWDOWN;
     }
     
-    buffer << endl << "Camera Position: " << camera->getAbsolutePosition().X << ", " << camera->getAbsolutePosition().Y << ", " << camera->getAbsolutePosition().Z << ": " << camVelocity.X << ", " << camVelocity.Y << ", " << camVelocity.Z << ";" << endl;
+    buffer << endl
+	   << "Camera --" << endl
+	   << "Position: " << camera->getAbsolutePosition().X << ", " << camera->getAbsolutePosition().Y << ", " << camera->getAbsolutePosition().Z << ": " << camera->getTarget().X << ", " << camera->getTarget().Y << ", " << camera->getTarget().Z << endl
+           << "Velocity: " << camVelocity.X << ", " << camVelocity.Y << ", " << camVelocity.Z << endl;
     
     camera->setPosition(camera->getPosition() + camVelocity);
     camera->setTarget(camera->getTarget() + camVelocity);

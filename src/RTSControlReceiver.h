@@ -9,7 +9,7 @@ public:
   virtual bool OnEvent(const SEvent& event)
   {
     if(event.EventType == EET_KEY_INPUT_EVENT)
-      KeyIsDown[event.KeyInput.key] = event.KeyInput.PressedDown;
+      KeyIsDown[event.KeyInput.Key] = event.KeyInput.PressedDown;
     
     return false;
   }
@@ -27,4 +27,4 @@ public:
   
 private:
   bool KeyIsDown[KEY_KEY_CODES_COUNT];
-}
+};

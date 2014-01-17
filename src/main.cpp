@@ -4,7 +4,9 @@
 
 #include "RTSControlReceiver.h"
 
-#define CAMERA_HEIGHT 355.0f
+#define CAMERA_HEIGHT   355.0f
+#define CAMERA_MAXVELO  5.0f
+#define CAMERA_ACCEL    1.0f
 
 #define HM_SIZE 1024
 #define HM_SCALEXZ 2.0f
@@ -25,6 +27,12 @@ int main(int argc, char* argv[])
   // VARIABLES
   char chbuffer;
   IrrlichtDevice* device;
+  IVideoDriver* driver;
+  ISceneManager* smgr;
+  IGUIEnvironment* guienv;
+  
+  // Setup controls.
+  RTSControlReceiver controls;
   video::E_DRIVER_TYPE driverType;
   
   // Initialize rendering device.
@@ -82,19 +90,16 @@ int main(int argc, char* argv[])
   cout << "Using heightmap: " << heightmap << endl << endl;
   
   // Create device and exit if creation failed.
-  device = createDevice(driverType, core::dimension2d<u32>(1024, 768));
+  device = createDevice(driverType, core::dimension2d<u32>(1024, 768), 16, false, false, false, &controls);
   
   if(device == 0) return 1;
   
   // Setup device.
   device->setWindowCaption(L"IRRLICHT WINDOW");
   
-  IVideoDriver* driver = device->getVideoDriver();
-  ISceneManager* smgr = device->getSceneManager();
-  IGUIEnvironment* guienv = device->getGUIEnvironment();
-  
-  // Setup controls.
-  RTSControlReceiver controls;
+  driver = device->getVideoDriver();
+  smgr = device->getSceneManager();
+  guienv = device->getGUIEnvironment();
   
   // Setup camera.
   ICameraSceneNode* camera = smgr->addCameraSceneNode(0, vector3df(0.0f, CAMERA_HEIGHT, 0.0f), vector3df(0.0f, 0.0f, 250.0f));
@@ -140,6 +145,9 @@ int main(int argc, char* argv[])
   
   waterSurface->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
   
+  // -- Test with water wireframe
+  waterSurface->setMaterialFlag(video::EMF_WIREFRAME, true);
+  
   // Setup simple collision for the camera
   // -- Selector
   ITriangleSelector* selector = smgr->createTerrainTriangleSelector(terrain, 0);
@@ -173,10 +181,25 @@ int main(int argc, char* argv[])
   
   ILightSceneNode* cameraLight = smgr->addLightSceneNode(0, vector3df(0.0f, 0.0f, 0.0f), video::SColor(255, 247, 247, 87), 1800.0f);
   
+  // Game Variables
+  vector3df camVelocity(0.0f, 0.0f, 0.0f);
   unsigned long long int tick = 0;
   
   // Simple game loop.
   while(device->run()) {
+    // Camera movement
+    {
+      vector3df camPosition = camera->getPosition();
+      
+      if(controls.IsKeyDown(KEY_UP)) camPosition.Z += CAMERA_MAXVELO;
+      else if(controls.IsKeyDown(KEY_DOWN)) camPosition.Z -= CAMERA_MAXVELO;
+      
+      if(controls.IsKeyDown(KEY_LEFT)) camPosition.X += CAMERA_MAXVELO;
+      else if(controls.IsKeyDown(KEY_RIGHT)) camPosition.X -= CAMERA_MAXVELO;
+      
+      camera->setPosition(camPosition);
+    }
+    
     // Setup HUD
     wstringstream buffer; // HUD FOR ME
     

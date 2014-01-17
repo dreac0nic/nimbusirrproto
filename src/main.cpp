@@ -154,6 +154,7 @@ int main(int argc, char* argv[])
   
   // Simple game loop.
   while(device->run()) {
+      if(device->isWindowFocused()){
     // Setup HUD
     wstringstream buffer; // HUD FOR ME
     
@@ -184,6 +185,7 @@ int main(int argc, char* argv[])
     
     // Increaase the tick.
     ++tick;
+  }
   }
   
   // Uninitialize

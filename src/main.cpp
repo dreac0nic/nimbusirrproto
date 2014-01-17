@@ -213,6 +213,8 @@ int main(int argc, char* argv[])
       else camVelocity.X += (camVelocity.X > 0 ? -1 : 1)*CAMERA_SLOWDOWN;
     }
     
+    buffer << endl << "Camera Position: " << camera->getAbsolutePosition().X << ", " << camera->getAbsolutePosition().Y << ", " << camera->getAbsolutePosition().Z << ": " << camVelocity.X << ", " << camVelocity.Y << ", " << camVelocity.Z << ";" << endl;
+    
     camera->setPosition(camera->getPosition() + camVelocity);
     camera->setTarget(camera->getTarget() + camVelocity);
     

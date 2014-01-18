@@ -7,4 +7,29 @@ echo CAUTION: Irrlicht dynamic link forces dynamic libraries due to library boun
 echo.
 pause
 
-g++ -static-libgcc -static-libstdc++ src\main.cpp -o build\NimbusPrototype.exe -Ic:\irrlicht-1.8.1\include -Lc:\irrlicht-1.8.1\lib\Win32-gcc -lIrrlicht -v
+g++ -static-libgcc -static-libstdc++ src\*.cpp -o build\NimbusPrototype.exe -Ic:\irrlicht-1.8.1\include -Lc:\irrlicht-1.8.1\lib\Win32-gcc -lIrrlicht -v
+
+echo.
+echo BUILD COMPLETE
+echo -----------------------------------------------
+echo Moving built files into primary directory.
+move .\build\NimbusPrototype.exe .\
+copy .\build\Irrlicht.dll .\
+echo.
+echo.
+echo Build complete. Would you like to run and then clean the project?
+set /p runWipe=Run and wipe? [y/N] 
+IF %runWipe%==y (
+   IF %runWipe%==Y (
+   echo.
+   echo Running application ...
+   .\NimbusPrototype.exe
+   echo.
+   echo.
+   echo Deleting built files.
+   del NimbusPrototype.exe
+   del Irrlicht.dll
+   echo.
+   echo SUCCESS. Exiting ...
+   )
+)

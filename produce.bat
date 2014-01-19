@@ -20,7 +20,6 @@ echo.
 echo Build complete. Would you like to run and then clean the project?
 set /p runWipe=Run and wipe? [y/N] 
 IF %runWipe%==y (
-   IF %runWipe%==Y (
    echo.
    echo Running application ...
    .\NimbusPrototype.exe
@@ -31,5 +30,4 @@ IF %runWipe%==y (
    del Irrlicht.dll
    echo.
    echo SUCCESS. Exiting ...
-   )
 )

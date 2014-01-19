@@ -89,7 +89,7 @@ void TileMap::addToSceneGraph(
 
         	position << "Generating (" << j << ", " << i << ")\n";
 
-			///* Uncomment/comment this block comment to toggle the test grid off/on
+			/* Uncomment/comment this block comment to toggle the test grid off/on
             this->tileGrid[j][i] = smgr->addMeshSceneNode(
                     mesh,
                     this->root,
@@ -161,11 +161,13 @@ void TileMap::update(gui::IGUIEnvironment* guienv, IVideoDriver* driver)
     	buffer << "Cloud " << i+1 << " Tile: (" << x << ", " << y <<")\n";
 
     }
-
+    
+    /*
     guienv->getBuiltInFont()->draw(
         buffer.str().c_str(),
         irr::core::rect<irr::s32>(10,130,250,20),
         irr::video::SColor(255,255,255,255));
+    */
 
     for(int i = 0; i < tileDim; i++)
     {

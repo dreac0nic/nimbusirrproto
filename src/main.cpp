@@ -1,8 +1,8 @@
 #include <iostream>
 #include <sstream>
 #include <irrlicht.h>
-#include "tileMap.h"
 
+#include "tileMap.h"
 #include "RTSControlReceiver.h"
 
 #define CAMERA_HEIGHT   355.0f
@@ -125,12 +125,23 @@ int main(int argc, char* argv[])
 
   terrain->setMaterialTexture(0, driver->getTexture("./assets/textures/terrain/grass/simple1_small.jpg"));
   terrain->scaleTexture(20.0f);
-
+  // terrain->setMaterialFlag(video::EMF_WIREFRAME, true);
+  
+  // Setup gravel bed.
+  IAnimatedMesh* gravelBedMesh = smgr->addHillPlaneMesh("gravelBedMesh", dimension2d<f32>(HM_SIZE*HM_SCALEXZ*2 - 512.0f/WATER_TILEFACTOR, HM_SIZE*HM_SCALEXZ*2 - 512.0f/WATER_TILEFACTOR), dimension2d<u32>(1, 1), 0, 0.0f, dimension2d<f32>(0.0f, 0.0f), dimension2d<f32>(20.0f, 20.0f));
+  
+  IMeshSceneNode* gravelBed = smgr->addMeshSceneNode(gravelBedMesh);
+  
+  gravelBed->setPosition(vector3df(-512.0f/WATER_TILEFACTOR/2, 8.0f, -512.0f/WATER_TILEFACTOR/2));
+  
+  gravelBed->setMaterialTexture(0, driver->getTexture("./assets/textures/terrain/gravel/dark1_bed.jpg"));
+  // gravelBed->setMaterialFlag(video::EMF_WIREFRAME, true);
+  
   // Setup water.
   IAnimatedMesh* mesh = smgr->addHillPlaneMesh(
     "waterHillMesh", // Mesh name
     dimension2d<f32>(512.0f/WATER_TILEFACTOR, 512.0f/WATER_TILEFACTOR), // Size of hill tiles
-    dimension2d<u32>((int)(HM_SIZE*HM_SCALEXZ/512*WATER_TILEFACTOR), (int)(HM_SIZE*HM_SCALEXZ/512*WATER_TILEFACTOR)), // Tally of the tiles
+    dimension2d<u32>((int)(HM_SIZE*HM_SCALEXZ*2/512*WATER_TILEFACTOR) - 1, (int)(HM_SIZE*HM_SCALEXZ*2/512*WATER_TILEFACTOR) - 1), // Tally of the tiles
     0, 0.0f, // Mesh material, and hill height
     dimension2d<f32>(0.0f, 0.0f), // Number of hills in the plane
     dimension2d<f32>(10.0f, 10.0f)); // Texture repeat count
@@ -141,7 +152,7 @@ int main(int argc, char* argv[])
     500.0f,  // Speed
     300.0f); // Length
 
-  waterSurface->setPosition(vector3df(0.0f, 80.0f, 0.0f));
+  waterSurface->setPosition(vector3df(-512.0f/WATER_TILEFACTOR/2.0f, 80.0f, -512.0f/WATER_TILEFACTOR/2.0f));
 
   waterSurface->setMaterialTexture(0, driver->getTexture("./assets/textures/terrain/water/shallow1_clear.png"));
   waterSurface->setMaterialTexture(1, driver->getTexture("./assets/textures/terrain/grass/simple1_small.jpg"));

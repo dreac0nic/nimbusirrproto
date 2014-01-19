@@ -5,12 +5,18 @@
 #include "tileMap.h"
 #include "RTSControlReceiver.h"
 
-#define CAMERA_HEIGHT   355.0f
-#define CAMERA_MAXVELO  5.0f
-#define CAMERA_ACCEL    1.0f
-#define CAMERA_SLOWDOWN 0.8f
+#define PI 3.14159
+
+#define CAMERA_HEIGHT    450.0f
+#define CAMERA_ANGLE     30.0f*PI/180.0f
+#define CAMERA_MAXVELO   5.0f
+#define CAMERA_ACCEL     1.0f
+#define CAMERA_SLOWDOWN  0.8f
+#define CAMERA_LOCKBOUND 1024.0f
 
 #define EDGE_TOLERENCE 15
+
+#define MAP_FARLANDS 2.5f
 
 #define HM_SIZE 1024
 #define HM_SCALEXZ 2.0f
@@ -88,7 +94,7 @@ int main(int argc, char* argv[])
 
   cin >> heightmap;
 
-  if(heightmap == "n") heightmap = "hm1_valley.bmp";
+  if(heightmap == "n") heightmap = "hm3_simpleisland.bmp";
 
   heightmap = "./assets/textures/hm/" + heightmap;
 
@@ -107,7 +113,7 @@ int main(int argc, char* argv[])
   guienv = device->getGUIEnvironment();
 
   // Setup camera.
-  ICameraSceneNode* camera = smgr->addCameraSceneNode(0, vector3df(0.0f, CAMERA_HEIGHT, 0.0f), vector3df(0.0f, 0.0f, 250.0f));
+  ICameraSceneNode* camera = smgr->addCameraSceneNode(0, vector3df(0.0f, CAMERA_HEIGHT, 0.0f), vector3df(0.0f, 0.0f, tan(CAMERA_ANGLE)*CAMERA_HEIGHT));
 
   camera->setFarValue(2400.0f);
 
@@ -128,7 +134,7 @@ int main(int argc, char* argv[])
   // terrain->setMaterialFlag(video::EMF_WIREFRAME, true);
   
   // Setup gravel bed.
-  IAnimatedMesh* gravelBedMesh = smgr->addHillPlaneMesh("gravelBedMesh", dimension2d<f32>(HM_SIZE*HM_SCALEXZ*2 - 512.0f/WATER_TILEFACTOR, HM_SIZE*HM_SCALEXZ*2 - 512.0f/WATER_TILEFACTOR), dimension2d<u32>(1, 1), 0, 0.0f, dimension2d<f32>(0.0f, 0.0f), dimension2d<f32>(20.0f, 20.0f));
+  IAnimatedMesh* gravelBedMesh = smgr->addHillPlaneMesh("gravelBedMesh", dimension2d<f32>(HM_SIZE*HM_SCALEXZ*MAP_FARLANDS - 512.0f/WATER_TILEFACTOR, HM_SIZE*HM_SCALEXZ*MAP_FARLANDS - 512.0f/WATER_TILEFACTOR), dimension2d<u32>(1, 1), 0, 0.0f, dimension2d<f32>(0.0f, 0.0f), dimension2d<f32>(20.0f, 20.0f));
   
   IMeshSceneNode* gravelBed = smgr->addMeshSceneNode(gravelBedMesh);
   
@@ -141,7 +147,7 @@ int main(int argc, char* argv[])
   IAnimatedMesh* mesh = smgr->addHillPlaneMesh(
     "waterHillMesh", // Mesh name
     dimension2d<f32>(512.0f/WATER_TILEFACTOR, 512.0f/WATER_TILEFACTOR), // Size of hill tiles
-    dimension2d<u32>((int)(HM_SIZE*HM_SCALEXZ*2/512*WATER_TILEFACTOR) - 1, (int)(HM_SIZE*HM_SCALEXZ*2/512*WATER_TILEFACTOR) - 1), // Tally of the tiles
+    dimension2d<u32>((int)(HM_SIZE*HM_SCALEXZ*MAP_FARLANDS/512*WATER_TILEFACTOR) - 1, (int)(HM_SIZE*HM_SCALEXZ*MAP_FARLANDS/512*WATER_TILEFACTOR) - 1), // Tally of the tiles
     0, 0.0f, // Mesh material, and hill height
     dimension2d<f32>(0.0f, 0.0f), // Number of hills in the plane
     dimension2d<f32>(10.0f, 10.0f)); // Texture repeat count
@@ -201,6 +207,7 @@ int main(int argc, char* argv[])
   ILightSceneNode* cameraLight = smgr->addLightSceneNode(0, vector3df(0.0f, 0.0f, 0.0f), video::SColor(255, 247, 247, 87), 1800.0f);
 
   // Game Variables
+  bool lockCamera = true;
   bool trapCursor = true;
   bool cursorVisible = true;
   bool lastKeys[KEY_KEY_CODES_COUNT];
@@ -227,11 +234,15 @@ int main(int argc, char* argv[])
     // Check debug controls
     if(controls.IsKeyDown(KEY_F9) && !lastKeys[KEY_F9])
       trapCursor = !trapCursor;
-    else if(controls.IsKeyDown(KEY_F10) && !lastKeys[KEY_F10]) {
+    
+    if(controls.IsKeyDown(KEY_F10) && !lastKeys[KEY_F10]) {
       cursorVisible = !cursorVisible;
       
       device->getCursorControl()->setVisible(cursorVisible);
     }
+    
+    if(controls.IsKeyDown(KEY_F11) && !lastKeys[KEY_F11])
+      lockCamera = !lockCamera;
     
     // Controls
     buffer << endl
@@ -296,13 +307,37 @@ int main(int argc, char* argv[])
     }
 
     buffer << endl
-	   << "Camera --" << endl
+	   << "Camera -- " << (lockCamera ? "LOCKED" : "FREE") << endl
 	   << "Position: " << camera->getAbsolutePosition().X << ", " << camera->getAbsolutePosition().Y << ", " << camera->getAbsolutePosition().Z << ": " << camera->getTarget().X << ", " << camera->getTarget().Y << ", " << camera->getTarget().Z << endl
-           << "Velocity: " << camVelocity.X << ", " << camVelocity.Y << ", " << camVelocity.Z << endl;
-
-    camera->setPosition(camera->getPosition() + camVelocity);
-    camera->setTarget(camera->getTarget() + camVelocity);
-
+           << "Velocity: " << camVelocity.X << ", " << camVelocity.Y << ", " << camVelocity.Z;
+    
+    // Check camera lock.
+    if(lockCamera) {
+      vector3df camPos = camera->getPosition();
+      vector3df newCamPos = camPos + camVelocity;
+      vector3df properDelta = camVelocity;
+      
+      if(newCamPos.X > CAMERA_LOCKBOUND)
+	properDelta.X = 0;
+      else if(newCamPos.X < -CAMERA_LOCKBOUND)
+        properDelta.X = 0;
+      
+      if(newCamPos.Z > CAMERA_LOCKBOUND)
+	properDelta.Z = 0;
+      else if(newCamPos.Z < -CAMERA_LOCKBOUND)
+        properDelta.Z = 0;
+      
+      buffer << " [" << properDelta.X << ", " << properDelta.Y << ", " << properDelta.Z << "]" << endl;
+      
+      camera->setPosition(camera->getPosition() + properDelta);
+      camera->setTarget(camera->getTarget() + properDelta);
+    } else { // Set position
+      buffer << endl;
+      
+      camera->setPosition(camera->getPosition() + camVelocity);
+      camera->setTarget(camera->getTarget() + camVelocity);
+    }
+    
     // SO YOU THINK YOU CAN STREAM ME AND RENDER THE SCENE
     driver->beginScene(true, true, SColor(255, 100, 101, 140));
 

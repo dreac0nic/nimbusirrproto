@@ -2,9 +2,11 @@
 .dep.inc
 *.dll
 dist/*
+*georgia*
 nbproject/*
 build/*
 Makefile
 *.layout
 *.depend
 *.cbp
+*#*#

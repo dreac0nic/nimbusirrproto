@@ -1,12 +1,13 @@
-#ifndef __NIMBUS_STILE
+#ifndef __NIMBUS_STYLE
 #define __NIMBUS_STYLE
 
 #include <irrlicht.h>
 
-using namespace irr;
-
 namespace nimbus
 {
+  // Commonly used namespaces.
+  using namespace irr;
+  
   /* CLASS: Tile
    * Tile mostly just holds information about itself.
    * This includes a SceneNode and information like:
@@ -18,9 +19,13 @@ namespace nimbus
    *   - Flooded (Water density?)
    *   - Soil Nutrition
    */
-  class Tile: public irr::scene::ISceneNode
+  class Tile
   {
   private:
+    // Scene member.
+    scene::ISceneNode root*;
+    
+    // Factors
     unsigned int type;
     float humidity;
     float temperature;
@@ -33,7 +38,7 @@ namespace nimbus
     
     // Destructors
     virtual ~Tile();
-  }
+  };
 }
 
 #endif

@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <irrlicht.h>
+#include "Tile.h"
 
 namespace nimbus
 {
@@ -14,26 +15,27 @@ namespace nimbus
    * Attempting to make the TileMap separate completely from the geometry
    *   of the world.
    */
-  class STileMap: public irr::scene::ISceneNode
+  class STileMap
   {
   private:
     // Tile map information
-    irr::core::dimension2d<float> worldSize;
-    irr::core::vector2d<int> tileCount;
+    core::dimension2d<float> worldSize;
+    core::vector2d<int> tileCount;
     
     // Scene members. Careful with unbounded containers.
     //   Possibly move to objects in the future.
-    nimbus::Tile*** tiles;
-    irr::scene::vector2d<float>*** vectorField;
+    scene::ISceneNode root*;
+    Tile*** tiles;
+    core::vector2d<float>*** vectorField;
     
   public:
     // Contructors
     STileMap();
-    STileMap(irr::core::dimension2d<float> worldSize, irr::core::vector2d<int> tileCount);
+    STileMap(core::dimension2d<float> worldSize, core::vector2d<int> tileCount);
     
     // Destructors
     virtual ~STileMap();
-  }
+  };
 }
 
 #endif

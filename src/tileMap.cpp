@@ -83,13 +83,13 @@ void TileMap::addToSceneGraph(
 			if(i == 0 && j == 0)
 			{
 				tempTexture = gridTexture;
-				gridTexture = driver->getTexture("assets/texture/gridRed.png");
+				gridTexture = driver->getTexture("assets/textures/gridRed.png");
 			}
         	stringstream position;
 
         	position << "Generating (" << j << ", " << i << ")\n";
 
-			/* Uncomment/comment this block comment to toggle the test grid off/on
+		///* Uncomment/comment this block comment to toggle the test grid off/on
             this->tileGrid[j][i] = smgr->addMeshSceneNode(
                     mesh,
                     this->root,
@@ -104,7 +104,7 @@ void TileMap::addToSceneGraph(
             {
             	gridTexture = tempTexture;
             }
-            //grid->setMaterialFlag(EMF_LIGHTING, false);
+            tileGrid[j][i]->setMaterialFlag(EMF_LIGHTING, false);
 
 			// Attempt to create coordinate text on the play field... failure due to font maligning and small size
 //            ISceneNode* coordinateText = smgr->addBillboardTextSceneNode(

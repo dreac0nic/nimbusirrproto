@@ -130,6 +130,7 @@ int main(int argc, char* argv[])
     8); // Smoothing factor
 
   terrain->setMaterialTexture(0, driver->getTexture("./assets/textures/terrain/grass/simple1_small.jpg"));
+  terrain->setMaterialFlag(video::EMF_LIGHTING, true);
   terrain->scaleTexture(20.0f);
   // terrain->setMaterialFlag(video::EMF_WIREFRAME, true);
   

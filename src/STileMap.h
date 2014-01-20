@@ -24,7 +24,7 @@ namespace nimbus
     
     // Scene members. Careful with unbounded containers.
     //   Possibly move to objects in the future.
-    scene::ISceneNode root*;
+    scene::ISceneNode* root;
     Tile*** tiles;
     core::vector2d<float>*** vectorField;
     

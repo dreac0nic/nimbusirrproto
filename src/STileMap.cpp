@@ -6,7 +6,7 @@ namespace nimbus
    * Top-level constructor for TileMap
    * SHOULD DELEGATE LOWER FUNCTIONS
    */
-  STileMap::STileMap(): TileMap(core::dimension2d<float>(1024.0f, 1024.0f), core::vector2d<int>(10, 10)) {}
+  STileMap::STileMap(): STileMap(core::dimension2d<float>(1024.0f, 1024.0f), core::vector2d<int>(10, 10)) {}
   
   /* FUNCTION: TileMap constructor
    * Lowest delegate.
@@ -32,7 +32,7 @@ namespace nimbus
     }
   }
   
-  virtual STileMap::~STileMap()
+  STileMap::~STileMap()
   {
     std::cerr << "!!!WARNING!!!" << std::endl << "MAKE SURE TILES ARE GETTING DEALLOCATED. THIS MESSAGE IS NTO TO BE REMOVED UNTIL THIS CHECK IS DONE AND CONFIRMED BY AT LEAST TWO DEVELOPERS." << std::endl << "!!!WARNING!!!" << std::endl;
     

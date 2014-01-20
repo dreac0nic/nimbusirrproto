@@ -1,6 +1,7 @@
 #ifndef __NIMBUS_STYLE
 #define __NIMBUS_STYLE
 
+#include <iostream>
 #include <irrlicht.h>
 
 namespace nimbus
@@ -23,7 +24,7 @@ namespace nimbus
   {
   private:
     // Scene member.
-    scene::ISceneNode root*;
+    scene::ISceneNode* root;
     
     // Factors
     unsigned int type;

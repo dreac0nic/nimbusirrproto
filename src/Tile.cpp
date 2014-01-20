@@ -21,5 +21,5 @@ nimbus::Tile::Tile(unsigned int type, float humidity, float temperature, float s
  */
 nimbus::Tile::~Tile()
 {
-  cerr << "Lolz, I'm waisting cycles. kthxbye" << endl.
+  std::cerr << "Lolz, I'm waisting cycles. kthxbye" << std::endl;
 }

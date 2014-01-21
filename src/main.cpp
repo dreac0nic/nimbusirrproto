@@ -197,7 +197,7 @@ int main(int argc, char* argv[])
   tileMap.addToSceneGraph(0, vector3df(0,70,0), smgr, driver, guienv);
   
   // Setup the STileMap!
-  nimbus::STileMap map(dimension2df(HM_SIZE*HM_SCALEXZ, HM_SIZE*HM_SCALEXZ), vector2ds(10, 10));
+  nimbus::STileMap map(dimension2df(HM_SIZE*HM_SCALEXZ, HM_SIZE*HM_SCALEXZ), vector2d<u32>(10, 10));
 
   // Add some super basic lighting.
   double sunDistance = HM_SIZE*HM_SCALEXZ*2;

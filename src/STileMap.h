@@ -19,19 +19,19 @@ namespace nimbus
   {
   private:
     // Tile map information
-    core::dimension2d<float> worldSize;
-    core::vector2d<int> tileCount;
+    core::dimension2df worldSize;
+    core::vector2d<u32> tileCount;
     
     // Scene members. Careful with unbounded containers.
     //   Possibly move to objects in the future.
     scene::ISceneNode* root;
     Tile*** tiles;
-    core::vector2d<float>*** vectorField;
+    core::vector2d<f32>*** vectorField;
     
   public:
     // Contructors
     STileMap();
-    STileMap(core::dimension2d<float> worldSize, core::vector2d<int> tileCount);
+    STileMap(core::dimension2df worldSize, core::vector2d<u32> tileCount);
     
     // Destructors
     virtual ~STileMap();

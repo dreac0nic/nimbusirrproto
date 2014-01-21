@@ -2,6 +2,8 @@
 #include <sstream>
 #include <irrlicht.h>
 
+#include "STileMap.h"
+#include "Tile.h"
 #include "tileMap.h"
 #include "RTSControlReceiver.h"
 

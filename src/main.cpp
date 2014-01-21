@@ -177,6 +177,7 @@ int main(int argc, char* argv[])
   terrain->setTriangleSelector(selector);
 
   // -- Setup Collision
+  // CAUTION: STILL RELEVANT DO NOT REMOVE
   /*ISceneNodeAnimator* anim = smgr->createCollisionResponseAnimator(
     selector, // Collisioner
     camera, // Effected entity
@@ -185,7 +186,7 @@ int main(int argc, char* argv[])
     vector3df(0.0f, 50.0f, 0.0f)); // Translation of bounding area
 
   camera->addAnimator(anim);
-
+  
   // -- Cleanup
   selector->drop();
   anim->drop();*/
@@ -194,6 +195,9 @@ int main(int argc, char* argv[])
   TileMap tileMap(32, HM_SIZE*HM_SCALEXZ);
 
   tileMap.addToSceneGraph(0, vector3df(0,70,0), smgr, driver, guienv);
+  
+  // Setup the STileMap!
+  nimbus::STileMap map(dimension2df(HM_SIZE*HM_SCALEXZ, HM_SIZE*HM_SCALEXZ), vector2ds(10, 10));
 
   // Add some super basic lighting.
   double sunDistance = HM_SIZE*HM_SCALEXZ*2;

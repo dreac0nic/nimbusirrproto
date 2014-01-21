@@ -22,6 +22,9 @@ namespace nimbus
    */
   class Tile
   {
+  public:
+    static unsigned int count; // STATIC COUNT USED FOR MEMORY DEBUGGING PURPOSES
+    
   private:
     // Scene member.
     scene::ISceneNode* root;

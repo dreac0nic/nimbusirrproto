@@ -39,8 +39,7 @@ namespace nimbus
     for(int row = 0; row < this->tileCount.Y; ++row) {
       for(int col = 0; col < this->tileCount.X; ++col) {
 	delete this->vectorField[row][col];
-	
-	// MAKE SURE TILES ARE GETTING DEALLOCATED PROPERLY
+	// delete this->tiles[row][col]; // MAKE SURE TILES ARE GETTING DEALLOCATED PROPERLY
       }
       
       delete[] this->tiles[row];

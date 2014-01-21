@@ -224,145 +224,145 @@ int main(int argc, char* argv[])
   
   // Simple game loop.
   while(device->run()) {
-      if(device->isWindowFocused()){
-    // Setup HUD
-    wstringstream buffer; // HUD FOR ME
+    if(device->isWindowFocused()){
+      // Setup HUD
+      wstringstream buffer; // HUD FOR ME
 
-    // FOR MEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE ...
-    buffer << driver->getName() << endl
-           << "Heightmap Used: " << heightmap.c_str() << endl
-           << "Framerate: " << driver->getFPS() << endl
-           << "Height: " << terrain->getHeight(camera->getAbsolutePosition().X, camera->getAbsolutePosition().Z) << endl;
+      // FOR MEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE ...
+      buffer << driver->getName() << endl
+	     << "Heightmap Used: " << heightmap.c_str() << endl
+	     << "Framerate: " << driver->getFPS() << endl
+	     << "Height: " << terrain->getHeight(camera->getAbsolutePosition().X, camera->getAbsolutePosition().Z) << endl;
     
-    // Check debug controls
-    if(controls.IsKeyDown(KEY_F9) && !lastKeys[KEY_F9])
-      trapCursor = !trapCursor;
+      // Check debug controls
+      if(controls.IsKeyDown(KEY_F9) && !lastKeys[KEY_F9])
+	trapCursor = !trapCursor;
     
-    if(controls.IsKeyDown(KEY_F10) && !lastKeys[KEY_F10]) {
-      cursorVisible = !cursorVisible;
+      if(controls.IsKeyDown(KEY_F10) && !lastKeys[KEY_F10]) {
+	cursorVisible = !cursorVisible;
       
-      device->getCursorControl()->setVisible(cursorVisible);
-    }
-    
-    if(controls.IsKeyDown(KEY_F11) && !lastKeys[KEY_F11])
-      lockCamera = !lockCamera;
-    
-    // Controls
-    buffer << endl
-	   << "User Input --" << endl
-	   << "Arrow Keys [UDLR]: "
-	   << controls.IsKeyDown(KEY_UP) << ", "
-	   << controls.IsKeyDown(KEY_DOWN) << ", "
-	   << controls.IsKeyDown(KEY_LEFT) << ", "
-	   << controls.IsKeyDown(KEY_RIGHT) << endl
-	   << endl
-	   << "Cursor Screen Position: " << device->getCursorControl()->getPosition().X << ", " << device->getCursorControl()->getPosition().Y << endl
-	   << "Trap Cursor: " << (trapCursor ? "true" : "false") << "[" << (cursorVisible ? "true" : "false") << "]" << endl;
-    
-    // Trap cursor
-    if(trapCursor) {
-      bool changed = false;
-      vector2d<int> cursorPos = device->getCursorControl()->getPosition();
-      int height = driver->getScreenSize().Height;
-      int width = driver->getScreenSize().Width;
-      
-      if(cursorPos.X < 0) {
-        cursorPos.X = 0;
-	
-	changed = true;
-      } else if(cursorPos.X > width) {
-	cursorPos.X = width;
-	
-	changed = true;
+	device->getCursorControl()->setVisible(cursorVisible);
       }
+    
+      if(controls.IsKeyDown(KEY_F11) && !lastKeys[KEY_F11])
+	lockCamera = !lockCamera;
+    
+      // Controls
+      buffer << endl
+	     << "User Input --" << endl
+	     << "Arrow Keys [UDLR]: "
+	     << controls.IsKeyDown(KEY_UP) << ", "
+	     << controls.IsKeyDown(KEY_DOWN) << ", "
+	     << controls.IsKeyDown(KEY_LEFT) << ", "
+	     << controls.IsKeyDown(KEY_RIGHT) << endl
+	     << endl
+	     << "Cursor Screen Position: " << device->getCursorControl()->getPosition().X << ", " << device->getCursorControl()->getPosition().Y << endl
+	     << "Trap Cursor: " << (trapCursor ? "true" : "false") << "[" << (cursorVisible ? "true" : "false") << "]" << endl;
+    
+      // Trap cursor
+      if(trapCursor) {
+	bool changed = false;
+	vector2d<int> cursorPos = device->getCursorControl()->getPosition();
+	int height = driver->getScreenSize().Height;
+	int width = driver->getScreenSize().Width;
       
-      if(cursorPos.Y < 0) {
-	cursorPos.Y = 0;
+	if(cursorPos.X < 0) {
+	  cursorPos.X = 0;
 	
-	changed = true;
-      } else if(cursorPos.Y > height) {
-	cursorPos.Y = height;
+	  changed = true;
+	} else if(cursorPos.X > width) {
+	  cursorPos.X = width;
 	
-	changed = true;
+	  changed = true;
+	}
+      
+	if(cursorPos.Y < 0) {
+	  cursorPos.Y = 0;
+	
+	  changed = true;
+	} else if(cursorPos.Y > height) {
+	  cursorPos.Y = height;
+	
+	  changed = true;
+	}
+      
+	if(changed)
+	  device->getCursorControl()->setPosition(cursorPos);
       }
+    
+      // Camera movement
+      if(controls.IsKeyDown(KEY_UP) || device->getCursorControl()->getPosition().Y <= EDGE_TOLERENCE) {
+	camVelocity.Z = (camVelocity.Z > CAMERA_MAXVELO ? CAMERA_MAXVELO : camVelocity.Z + CAMERA_ACCEL);
+      } else if(controls.IsKeyDown(KEY_DOWN) || device->getCursorControl()->getPosition().Y >= driver->getScreenSize().Height - EDGE_TOLERENCE) {
+	camVelocity.Z = (camVelocity.Z < -CAMERA_MAXVELO ? -CAMERA_MAXVELO : camVelocity.Z - CAMERA_ACCEL);
+      } else {
+	if(abs(camVelocity.Z) < CAMERA_SLOWDOWN) camVelocity.Z = 0;
+	else camVelocity.Z += (camVelocity.Z > 0 ? -1 : 1)*CAMERA_SLOWDOWN;
+      }
+    
+      if(controls.IsKeyDown(KEY_RIGHT) || device->getCursorControl()->getPosition().X >= driver->getScreenSize().Width - EDGE_TOLERENCE) {
+	camVelocity.X = (camVelocity.X > CAMERA_MAXVELO ? CAMERA_MAXVELO : camVelocity.X + CAMERA_ACCEL);
+      } else if(controls.IsKeyDown(KEY_LEFT) || device->getCursorControl()->getPosition().X <= EDGE_TOLERENCE) {
+	camVelocity.X = (camVelocity.X < -CAMERA_MAXVELO ? -CAMERA_MAXVELO : camVelocity.X - CAMERA_ACCEL);
+      } else {
+	if(abs(camVelocity.X) < CAMERA_SLOWDOWN) camVelocity.X = 0;
+	else camVelocity.X += (camVelocity.X > 0 ? -1 : 1)*CAMERA_SLOWDOWN;
+      }
+
+      buffer << endl
+	     << "Camera -- " << (lockCamera ? "LOCKED" : "FREE") << endl
+	     << "Position: " << camera->getAbsolutePosition().X << ", " << camera->getAbsolutePosition().Y << ", " << camera->getAbsolutePosition().Z << ": " << camera->getTarget().X << ", " << camera->getTarget().Y << ", " << camera->getTarget().Z << endl
+	     << "Velocity: " << camVelocity.X << ", " << camVelocity.Y << ", " << camVelocity.Z;
+    
+      // Check camera lock.
+      if(lockCamera) {
+	vector3df camPos = camera->getPosition();
+	vector3df newCamPos = camPos + camVelocity;
+	vector3df properDelta = camVelocity;
       
-      if(changed)
-	device->getCursorControl()->setPosition(cursorPos);
+	if(newCamPos.X > CAMERA_LOCKBOUND)
+	  properDelta.X = 0;
+	else if(newCamPos.X < -CAMERA_LOCKBOUND)
+	  properDelta.X = 0;
+      
+	if(newCamPos.Z > CAMERA_LOCKBOUND)
+	  properDelta.Z = 0;
+	else if(newCamPos.Z < -CAMERA_LOCKBOUND)
+	  properDelta.Z = 0;
+      
+	buffer << " [" << properDelta.X << ", " << properDelta.Y << ", " << properDelta.Z << "]" << endl;
+      
+	camera->setPosition(camera->getPosition() + properDelta);
+	camera->setTarget(camera->getTarget() + properDelta);
+      } else { // Set position
+	buffer << endl;
+      
+	camera->setPosition(camera->getPosition() + camVelocity);
+	camera->setTarget(camera->getTarget() + camVelocity);
+      }
+    
+      // SO YOU THINK YOU CAN STREAM ME AND RENDER THE SCENE
+      driver->beginScene(true, true, SColor(255, 100, 101, 140));
+
+      // SO YOU THINK YOU CAN LEAVE ME AND DRAW ALL THE MANAGERS
+      smgr->drawAll();
+      guienv->drawAll(); // OOooooooooooh baby. Can't do this to me baby ...
+
+      // Just gotta get drawn, just gotta drawn right on to here!
+      guienv->getBuiltInFont()->draw(buffer.str().c_str(), rect<s32>(10, 10, 260, 22), video::SColor(255, 255, 255, 255));
+
+      // Sigh... I admit... something similar to de-feet... all three of them
+      tileMap.update(guienv, driver);
+
+      driver->endScene();
+
+      // Increaase the tick.
+      ++tick;
+    
+      // Cycle keys
+      for(u32 key = 0; key < KEY_KEY_CODES_COUNT; ++key)
+	lastKeys[key] = controls.IsKeyDown((EKEY_CODE)key);
     }
-    
-    // Camera movement
-    if(controls.IsKeyDown(KEY_UP) || device->getCursorControl()->getPosition().Y <= EDGE_TOLERENCE) {
-      camVelocity.Z = (camVelocity.Z > CAMERA_MAXVELO ? CAMERA_MAXVELO : camVelocity.Z + CAMERA_ACCEL);
-    } else if(controls.IsKeyDown(KEY_DOWN) || device->getCursorControl()->getPosition().Y >= driver->getScreenSize().Height - EDGE_TOLERENCE) {
-      camVelocity.Z = (camVelocity.Z < -CAMERA_MAXVELO ? -CAMERA_MAXVELO : camVelocity.Z - CAMERA_ACCEL);
-    } else {
-      if(abs(camVelocity.Z) < CAMERA_SLOWDOWN) camVelocity.Z = 0;
-      else camVelocity.Z += (camVelocity.Z > 0 ? -1 : 1)*CAMERA_SLOWDOWN;
-    }
-    
-    if(controls.IsKeyDown(KEY_RIGHT) || device->getCursorControl()->getPosition().X >= driver->getScreenSize().Width - EDGE_TOLERENCE) {
-      camVelocity.X = (camVelocity.X > CAMERA_MAXVELO ? CAMERA_MAXVELO : camVelocity.X + CAMERA_ACCEL);
-    } else if(controls.IsKeyDown(KEY_LEFT) || device->getCursorControl()->getPosition().X <= EDGE_TOLERENCE) {
-      camVelocity.X = (camVelocity.X < -CAMERA_MAXVELO ? -CAMERA_MAXVELO : camVelocity.X - CAMERA_ACCEL);
-    } else {
-      if(abs(camVelocity.X) < CAMERA_SLOWDOWN) camVelocity.X = 0;
-      else camVelocity.X += (camVelocity.X > 0 ? -1 : 1)*CAMERA_SLOWDOWN;
-    }
-
-    buffer << endl
-	   << "Camera -- " << (lockCamera ? "LOCKED" : "FREE") << endl
-	   << "Position: " << camera->getAbsolutePosition().X << ", " << camera->getAbsolutePosition().Y << ", " << camera->getAbsolutePosition().Z << ": " << camera->getTarget().X << ", " << camera->getTarget().Y << ", " << camera->getTarget().Z << endl
-           << "Velocity: " << camVelocity.X << ", " << camVelocity.Y << ", " << camVelocity.Z;
-    
-    // Check camera lock.
-    if(lockCamera) {
-      vector3df camPos = camera->getPosition();
-      vector3df newCamPos = camPos + camVelocity;
-      vector3df properDelta = camVelocity;
-      
-      if(newCamPos.X > CAMERA_LOCKBOUND)
-	properDelta.X = 0;
-      else if(newCamPos.X < -CAMERA_LOCKBOUND)
-        properDelta.X = 0;
-      
-      if(newCamPos.Z > CAMERA_LOCKBOUND)
-	properDelta.Z = 0;
-      else if(newCamPos.Z < -CAMERA_LOCKBOUND)
-        properDelta.Z = 0;
-      
-      buffer << " [" << properDelta.X << ", " << properDelta.Y << ", " << properDelta.Z << "]" << endl;
-      
-      camera->setPosition(camera->getPosition() + properDelta);
-      camera->setTarget(camera->getTarget() + properDelta);
-    } else { // Set position
-      buffer << endl;
-      
-      camera->setPosition(camera->getPosition() + camVelocity);
-      camera->setTarget(camera->getTarget() + camVelocity);
-    }
-    
-    // SO YOU THINK YOU CAN STREAM ME AND RENDER THE SCENE
-    driver->beginScene(true, true, SColor(255, 100, 101, 140));
-
-    // SO YOU THINK YOU CAN LEAVE ME AND DRAW ALL THE MANAGERS
-    smgr->drawAll();
-    guienv->drawAll(); // OOooooooooooh baby. Can't do this to me baby ...
-
-    // Just gotta get drawn, just gotta drawn right on to here!
-    guienv->getBuiltInFont()->draw(buffer.str().c_str(), rect<s32>(10, 10, 260, 22), video::SColor(255, 255, 255, 255));
-
-    // Sigh... I admit... something similar to de-feet... all three of them
-    tileMap.update(guienv, driver);
-
-    driver->endScene();
-
-    // Increaase the tick.
-    ++tick;
-    
-    // Cycle keys
-    for(u32 key = 0; key < KEY_KEY_CODES_COUNT; ++key)
-      lastKeys[key] = controls.IsKeyDown((EKEY_CODE)key);
-  }
   }
 
   // Uninitialize

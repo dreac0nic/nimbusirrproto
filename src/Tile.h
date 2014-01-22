@@ -50,6 +50,9 @@ namespace nimbus
     // Destructors
     virtual ~Tile();
     
+    // Acessor Methods
+    core::dimension2d<u32> getSize(void) { return this->size; }
+    
     // Object Methods
     void update(void);
     video::ITexture* getTexture(void);

@@ -51,7 +51,7 @@ nimbus::Tile::update(void)
   // UPDATE STUFF
 }
 
-/* FUNCITON: generateTexture
+/* FUNCTION: generateTexture
  * Generates a texture for this tile, allowing it
  *   to use its weather and tile information
  *   to create a texture for itself.
@@ -60,7 +60,7 @@ ITexture* nimbus::Tile::getTexture(void)
 {
   // CHECK INTEGRITY OF ENVIRONMENT
   if(!texture && texture->getColorFormat() != ECF_A8R8G8B8) {
-    cerr << "CATASTROPIC FAILURE OF ASSET '" << this->name << "'." << endl;
+    std::cerr << "CATASTROPIC FAILURE OF ASSET '" << this->name << "'." << std::endl;
     
     return null;
   }

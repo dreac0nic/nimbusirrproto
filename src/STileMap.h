@@ -30,8 +30,8 @@ namespace nimbus
     
   public:
     // Contructors
-    STileMap();
-    STileMap(core::dimension2df worldSize, core::vector2d<u32> tileCount);
+    STileMap(IrrlichtDevice* device);
+    STileMap(IrrlichtDevice* device, core::dimension2df worldSize, core::vector2d<u32> tileCount);
     
     // Destructors
     virtual ~STileMap();

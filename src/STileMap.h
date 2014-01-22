@@ -22,6 +22,8 @@ namespace nimbus
     core::dimension2df worldSize;
     core::vector2d<u32> tileCount;
     
+    video::ITexture* texture;
+    
     // Scene members. Careful with unbounded containers.
     //   Possibly move to objects in the future.
     scene::ISceneNode* root;
@@ -38,7 +40,7 @@ namespace nimbus
     
     // Object Methods
     void update(void);
-    video::ITexture* generateTexture(void);
+    video::ITexture* getTexture(void);
   };
 }
 

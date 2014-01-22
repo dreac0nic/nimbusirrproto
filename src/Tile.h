@@ -2,6 +2,7 @@
 #define __NIMBUS_STYLE
 
 #include <iostream>
+#include <sstream>
 #include <irrlicht.h>
 
 namespace nimbus
@@ -24,6 +25,7 @@ namespace nimbus
   {
   public:
     static unsigned int count; // STATIC COUNT USED FOR MEMORY DEBUGGING PURPOSES
+    static unsigned long long int nextId;
     
   private:
     // Scene member.
@@ -35,13 +37,22 @@ namespace nimbus
     float temperature;
     float saturation;
     
+    // Physical Tile Stuff
+    string name;
+    core::dimension2d<u32> size;
+    ITexture* texture;
+    
   public:
     // Constructors
-    Tile();
-    Tile(unsigned int type, float humidity, float temperature, float saturation);
+    Tile(IrrlichtDevice* device);
+    Tile(IrrlichtDevice* device, core::dimension2d<u32> size, unsigned int type, float humidity, float temperature, float saturation);
     
     // Destructors
     virtual ~Tile();
+    
+    // Object Methods
+    void update(void);
+    ITexture* getTexture(void);
   };
 }
 

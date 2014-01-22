@@ -35,6 +35,10 @@ namespace nimbus
     
     // Destructors
     virtual ~STileMap();
+    
+    // Object Methods
+    void update(void);
+    ITexture* generateTexture(void);
   };
 }
 

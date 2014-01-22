@@ -120,6 +120,16 @@ int main(int argc, char* argv[])
   camera->setFarValue(2400.0f);
 
   // Setup terrain.
+  ITexture* hm = driver->getTexture(heightmap.c_str());
+  
+  if(!hm) {
+    cerr << "Your HM is bad and you should feel bad." << endl;
+    
+    heightmap = "./assets/textures/hm/hm3_simpleisland.bmp";
+  } else {
+    hm->drop();
+  }
+  
   ITerrainSceneNode* terrain = smgr->addTerrainSceneNode(
     heightmap.c_str(), // Asset
     0, -1, // Parent ID, Node ID

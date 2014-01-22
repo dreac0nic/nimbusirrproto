@@ -38,7 +38,7 @@ namespace nimbus
     
     // Object Methods
     void update(void);
-    ITexture* generateTexture(void);
+    video::ITexture* generateTexture(void);
   };
 }
 

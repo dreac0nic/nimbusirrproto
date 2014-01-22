@@ -38,9 +38,9 @@ namespace nimbus
     float saturation;
     
     // Physical Tile Stuff
-    string name;
+    std::string name;
     core::dimension2d<u32> size;
-    ITexture* texture;
+    video::ITexture* texture;
     
   public:
     // Constructors
@@ -52,7 +52,7 @@ namespace nimbus
     
     // Object Methods
     void update(void);
-    ITexture* getTexture(void);
+    video::ITexture* getTexture(void);
   };
 }
 

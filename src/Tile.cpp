@@ -2,6 +2,7 @@
 
 // VARIABLE INSTANTIATION
 unsigned int nimbus::Tile::count = 0;
+unsigned long long int nimbus::Tile::nextId = 0;
 
 /* FUNCTION: Tile constructor
  * Top-level constructor.
@@ -26,7 +27,7 @@ nimbus::Tile::Tile(IrrlichtDevice* device, core::dimension2d<u32> size, unsigned
   this->count++;
   this->name = nameBuffer.str();
   
-  this->texture = device->getVideoDriver()->addTexture(this->size, this->name, ECF_A8R8G8B8);
+  this->texture = device->getVideoDriver()->addTexture(this->size, this->name.c_str(), video::ECF_A8R8G8B8);
 }
 
 /* FUNCTION: Tile deconstructor
@@ -46,7 +47,7 @@ nimbus::Tile::~Tile()
  *   giving the tile the oppurtunity to update itself
  *   before a draw.
  */
-nimbus::Tile::update(void)
+void nimbus::Tile::update(void)
 {
   // UPDATE STUFF
 }
@@ -56,16 +57,16 @@ nimbus::Tile::update(void)
  *   to use its weather and tile information
  *   to create a texture for itself.
  */
-ITexture* nimbus::Tile::getTexture(void)
+irr::video::ITexture* nimbus::Tile::getTexture(void)
 {
   // CHECK INTEGRITY OF ENVIRONMENT
-  if(!texture && texture->getColorFormat() != ECF_A8R8G8B8) {
+  if(!texture && texture->getColorFormat() != video::ECF_A8R8G8B8) {
     std::cerr << "CATASTROPIC FAILURE OF ASSET '" << this->name << "'." << std::endl;
     
-    return null;
+    return 0;
   }
   
-  u32 data = static_cast<u32*>(texture->lock());
+  u32* data = static_cast<u32*>(texture->lock());
   u32 color = 0xffaa00aa;
   
   // PICK TEXTURE DATA
@@ -82,19 +83,19 @@ ITexture* nimbus::Tile::getTexture(void)
     
   default:
     // RAINBOWS
-    cerr << "PABLO LIES" << endl;
+    std::cerr << "PABLO LIES" << std::endl;
     break;
   }
   
   // GENERATE TEXTURE DATA
-  for(u32 x = 0; x < this->size.getWidth(); ++x) {
-    for(u32 y = 0; y < this->size.getHeight(); ++y) {
-      data[x + this->size.getHeight()*y] = color;
+  for(u32 x = 0; x < this->size.Width; ++x) {
+    for(u32 y = 0; y < this->size.Height; ++y) {
+      data[x + this->size.Height*y] = color;
     }
   }
   
   // UNLOCK TEXTURE AND RETURN
   this->texture->unlock();
   
-  return this->texture();
+  return this->texture;
 }

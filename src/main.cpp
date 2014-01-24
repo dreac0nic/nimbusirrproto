@@ -130,7 +130,7 @@ int main(int argc, char* argv[])
     hm->drop();
   }
   
-  cerr << "\t Creating terrain." << endl;
+  cerr << "CREATING TERRAIN" << endl;
   
   ITerrainSceneNode* terrain = smgr->addTerrainSceneNode(
     heightmap.c_str(), // Asset
@@ -148,7 +148,7 @@ int main(int argc, char* argv[])
   terrain->scaleTexture(20.0f);
   // terrain->setMaterialFlag(video::EMF_WIREFRAME, true);
   
-  cerr << "\t Creating gravel!" << endl;
+  cerr << "CREATING GRAVEL BED" << endl;
   
   // Setup gravel bed.
   IAnimatedMesh* gravelBedMesh = smgr->addHillPlaneMesh("gravelBedMesh", dimension2d<f32>(HM_SIZE*HM_SCALEXZ*MAP_FARLANDS - 512.0f/WATER_TILEFACTOR, HM_SIZE*HM_SCALEXZ*MAP_FARLANDS - 512.0f/WATER_TILEFACTOR), dimension2d<u32>(1, 1), 0, 0.0f, dimension2d<f32>(0.0f, 0.0f), dimension2d<f32>(20.0f, 20.0f));
@@ -160,7 +160,7 @@ int main(int argc, char* argv[])
   gravelBed->setMaterialTexture(0, driver->getTexture("./assets/textures/terrain/gravel/dark1_bed.jpg"));
   // gravelBed->setMaterialFlag(video::EMF_WIREFRAME, true);
   
-  cerr << "\t Creating water." << endl;
+  cerr << "CREATING WATER PLANE" << endl;
   
   // Setup water.
   IAnimatedMesh* mesh = smgr->addHillPlaneMesh(
@@ -170,7 +170,9 @@ int main(int argc, char* argv[])
     0, 0.0f, // Mesh material, and hill height
     dimension2d<f32>(0.0f, 0.0f), // Number of hills in the plane
     dimension2d<f32>(10.0f, 10.0f)); // Texture repeat count
-
+  
+  cerr << "CREATING WATER SURFACE" << endl;
+  
   ISceneNode* waterSurface = smgr->addWaterSurfaceSceneNode(
     mesh->getMesh(0), // Mesh in question
     2.0f,   // Height
@@ -179,16 +181,16 @@ int main(int argc, char* argv[])
 
   waterSurface->setPosition(vector3df(-512.0f/WATER_TILEFACTOR/2.0f, 80.0f, -512.0f/WATER_TILEFACTOR/2.0f));
   
-  cerr << "\t\t LOADING TEXTURE..." << endl;
-  
   waterSurface->setMaterialTexture(0, driver->getTexture("./assets/textures/terrain/water/shallow1_clear.png"));
 
   waterSurface->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
   
   // -- Test with water wireframe
   // waterSurface->setMaterialFlag(video::EMF_WIREFRAME, true);
-
+  
   // Setup simple collision for the camera
+  cerr << "NOTE: RE ADD CAMERA COLLISION FOR REFERENCE IN THE FUTURE -- FIX BOUNDING." << endl;
+  
   // -- Selector
   ITriangleSelector* selector = smgr->createTerrainTriangleSelector(terrain, 0);
   terrain->setTriangleSelector(selector);
@@ -208,7 +210,7 @@ int main(int argc, char* argv[])
   selector->drop();
   anim->drop();*/
 
-  cerr << "\t Initializing Tile Map" << endl;
+  cerr << "INITIALIZING TILE MAP" << endl;
   
   // Setup the tilemap
   TileMap tileMap(32, HM_SIZE*HM_SCALEXZ);
@@ -219,11 +221,13 @@ int main(int argc, char* argv[])
   // nimbus::STileMap map(dimension2df(HM_SIZE*HM_SCALEXZ, HM_SIZE*HM_SCALEXZ), vector2d<u32>(10, 10));
 
   // Add some super basic lighting.
+  cerr << "SETUP SUN" << endl;
+  
   double sunDistance = HM_SIZE*HM_SCALEXZ*2;
   double sunFactor = 14.4;
   double angleInSky = 0.95993;
   double tweakAngle = 0.69813;
-
+  
   ILightSceneNode* sun = smgr->addLightSceneNode(
     0, // Parent Node
     vector3df(-1*sunDistance*sin(angleInSky), sunDistance*cos(angleInSky), sunDistance*sin(tweakAngle)), // Position
@@ -231,8 +235,10 @@ int main(int argc, char* argv[])
     HM_SIZE*HM_SCALEXZ*sunFactor + sunDistance); // Radius
 
   ILightSceneNode* cameraLight = smgr->addLightSceneNode(0, vector3df(0.0f, 0.0f, 0.0f), video::SColor(255, 247, 247, 87), 1800.0f);
-
+  
   // Game Variables
+  cerr << "GAME SETUP" << endl;
+  
   bool lockCamera = true;
   bool trapCursor = true;
   bool cursorVisible = true;
@@ -248,6 +254,8 @@ int main(int argc, char* argv[])
     lastKeys[key] = false;
   
   // Simple game loop.
+  cerr << "ENTERING MAIN LOOP" << endl;
+  
   while(device->run()) {
     if(device->isWindowFocused()){
       // Setup HUD

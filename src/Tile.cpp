@@ -9,7 +9,7 @@ namespace nimbus {
    * Top-level constructor.
    * Delegates all resources to lower-tier.
    */
-  Tile::Tile(IrrlichtDevice* device): Tile(device, core::dimension2d<u32>(512.0f, 512.0f), 0, 0.0f, 0.0f, 0.0f) {}
+  Tile::Tile(IrrlichtDevice* device): Tile(device, core::dimension2d<u32>(64.0f, 64.0f), 0, 0.0f, 0.0f, 0.0f) {}
 
   /* FUNCTION: Tile constructor
    * Lowest-level delegate.
@@ -63,13 +63,13 @@ namespace nimbus {
     // CHECK INTEGRITY OF ENVIRONMENT
     if(!texture && texture->getColorFormat() != video::ECF_A8R8G8B8) {
       std::cerr << "CATASTROPIC FAILURE OF ASSET '" << this->name << "'." << std::endl;
-    
+      
       return 0;
     }
-  
+    
     u32* data = static_cast<u32*>(texture->lock());
     u32 color = 0xffaa00aa;
-  
+    
     // PICK TEXTURE DATA
     switch(this->type) {
     case 0:
@@ -87,11 +87,14 @@ namespace nimbus {
       std::cerr << "PABLO LIES" << std::endl;
       break;
     }
-  
+    
+    using namespace std;
+    cerr << "Generating texture data ... [" << this->size.Width << "x" << this->size.Height << "]" << endl;
+    
     // GENERATE TEXTURE DATA
     for(u32 x = 0; x < this->size.Width; ++x) {
       for(u32 y = 0; y < this->size.Height; ++y) {
-	data[x + this->size.Height*y] = color;
+	data[x*this->size.Width + y] = color;
       }
     }
   

@@ -130,6 +130,8 @@ int main(int argc, char* argv[])
     hm->drop();
   }
   
+  cerr << "\t Creating terrain." << endl;
+  
   ITerrainSceneNode* terrain = smgr->addTerrainSceneNode(
     heightmap.c_str(), // Asset
     0, -1, // Parent ID, Node ID
@@ -140,11 +142,13 @@ int main(int argc, char* argv[])
     5, // Maximum LOD
     ETPS_33, // Patch size
     8); // Smoothing factor
-
+  
   terrain->setMaterialTexture(0, driver->getTexture("./assets/textures/terrain/grass/simple1_small.jpg"));
   terrain->setMaterialFlag(video::EMF_LIGHTING, true);
   terrain->scaleTexture(20.0f);
   // terrain->setMaterialFlag(video::EMF_WIREFRAME, true);
+  
+  cerr << "\t Creating gravel!" << endl;
   
   // Setup gravel bed.
   IAnimatedMesh* gravelBedMesh = smgr->addHillPlaneMesh("gravelBedMesh", dimension2d<f32>(HM_SIZE*HM_SCALEXZ*MAP_FARLANDS - 512.0f/WATER_TILEFACTOR, HM_SIZE*HM_SCALEXZ*MAP_FARLANDS - 512.0f/WATER_TILEFACTOR), dimension2d<u32>(1, 1), 0, 0.0f, dimension2d<f32>(0.0f, 0.0f), dimension2d<f32>(20.0f, 20.0f));
@@ -155,6 +159,8 @@ int main(int argc, char* argv[])
   
   gravelBed->setMaterialTexture(0, driver->getTexture("./assets/textures/terrain/gravel/dark1_bed.jpg"));
   // gravelBed->setMaterialFlag(video::EMF_WIREFRAME, true);
+  
+  cerr << "\t Creating water." << endl;
   
   // Setup water.
   IAnimatedMesh* mesh = smgr->addHillPlaneMesh(
@@ -172,12 +178,13 @@ int main(int argc, char* argv[])
     300.0f); // Length
 
   waterSurface->setPosition(vector3df(-512.0f/WATER_TILEFACTOR/2.0f, 80.0f, -512.0f/WATER_TILEFACTOR/2.0f));
-
+  
+  cerr << "\t\t LOADING TEXTURE..." << endl;
+  
   waterSurface->setMaterialTexture(0, driver->getTexture("./assets/textures/terrain/water/shallow1_clear.png"));
-  waterSurface->setMaterialTexture(1, driver->getTexture("./assets/textures/terrain/grass/simple1_small.jpg"));
 
   waterSurface->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
-
+  
   // -- Test with water wireframe
   // waterSurface->setMaterialFlag(video::EMF_WIREFRAME, true);
 
@@ -201,13 +208,15 @@ int main(int argc, char* argv[])
   selector->drop();
   anim->drop();*/
 
+  cerr << "\t Initializing Tile Map" << endl;
+  
   // Setup the tilemap
   TileMap tileMap(32, HM_SIZE*HM_SCALEXZ);
 
   tileMap.addToSceneGraph(0, vector3df(0,70,0), smgr, driver, guienv);
   
   // Setup the STileMap!
-  nimbus::STileMap map(dimension2df(HM_SIZE*HM_SCALEXZ, HM_SIZE*HM_SCALEXZ), vector2d<u32>(10, 10));
+  // nimbus::STileMap map(dimension2df(HM_SIZE*HM_SCALEXZ, HM_SIZE*HM_SCALEXZ), vector2d<u32>(10, 10));
 
   // Add some super basic lighting.
   double sunDistance = HM_SIZE*HM_SCALEXZ*2;
@@ -231,6 +240,8 @@ int main(int argc, char* argv[])
   
   vector3df camVelocity(0.0f, 0.0f, 0.0f);
   unsigned long long int tick = 0;
+  
+  std::cerr << "Time to loop!" << std::endl;
   
   // Setup
   for(u32 key = 0; key < KEY_KEY_CODES_COUNT; ++key)

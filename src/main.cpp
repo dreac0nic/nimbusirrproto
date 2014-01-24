@@ -2,8 +2,6 @@
 #include <sstream>
 #include <irrlicht.h>
 
-#include "STileMap.h"
-#include "Tile.h"
 #include "tileMap.h"
 #include "RTSControlReceiver.h"
 
@@ -144,6 +142,7 @@ int main(int argc, char* argv[])
     8); // Smoothing factor
   
   terrain->setMaterialTexture(0, driver->getTexture("./assets/textures/terrain/grass/simple1_small.jpg"));
+  cerr << "DONE" << endl;
   terrain->setMaterialFlag(video::EMF_LIGHTING, true);
   terrain->scaleTexture(20.0f);
   // terrain->setMaterialFlag(video::EMF_WIREFRAME, true);
@@ -213,12 +212,12 @@ int main(int argc, char* argv[])
   cerr << "INITIALIZING TILE MAP" << endl;
   
   // Setup the tilemap
-  TileMap tileMap(32, HM_SIZE*HM_SCALEXZ);
+  //TileMap tileMap(32, HM_SIZE*HM_SCALEXZ);
 
-  tileMap.addToSceneGraph(0, vector3df(0,70,0), smgr, driver, guienv);
+  //tileMap.addToSceneGraph(0, vector3df(0,70,0), smgr, driver, guienv);
   
   // Setup the STileMap!
-  // nimbus::STileMap map(dimension2df(HM_SIZE*HM_SCALEXZ, HM_SIZE*HM_SCALEXZ), vector2d<u32>(10, 10));
+  // nimbus::STileMap map(dimension2df(HM_SIZE*HM_SCALEXZ, HM_SIZE*HM_SCALEXZ), vector2d<u32>(10, 10))
 
   // Add some super basic lighting.
   cerr << "SETUP SUN" << endl;
@@ -385,7 +384,7 @@ int main(int argc, char* argv[])
       guienv->getBuiltInFont()->draw(buffer.str().c_str(), rect<s32>(10, 10, 260, 22), video::SColor(255, 255, 255, 255));
 
       // Sigh... I admit... something similar to de-feet... all three of them
-      tileMap.update(guienv, driver);
+      //tileMap.update(guienv, driver);
 
       driver->endScene();
 

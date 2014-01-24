@@ -7,7 +7,7 @@ echo CAUTION: Irrlicht dynamic link forces dynamic libraries due to library boun
 echo.
 pause
 
-g++ -static-libgcc -static-libstdc++ src\*.cpp -o build\NimbusPrototype.exe -Ic:\irrlicht-1.8.1\include -Lc:\irrlicht-1.8.1\lib\Win32-gcc -lIrrlicht -v
+g++ -static-libgcc -static-libstdc++ src\*.cpp -o build\NimbusPrototype.exe -Ic:\irrlicht-1.8.1\include -Lc:\irrlicht-1.8.1\lib\Win32-gcc -lIrrlicht -v -std=c++11
 
 echo.
 echo BUILD COMPLETE

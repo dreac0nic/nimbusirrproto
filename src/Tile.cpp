@@ -66,7 +66,8 @@ namespace nimbus {
       
       return 0;
     }
-    
+
+    // LOOK INTO CHANGING TO u8, POSSIBLY FIXES THE ISSUES WITH MEMORY OVERFLOW
     u32* data = static_cast<u32*>(texture->lock());
     u32 color = 0xffaa00aa;
     

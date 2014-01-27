@@ -3,6 +3,8 @@
 #include <irrlicht.h>
 
 #include "tileMap.h"
+#include "STileMap.h"
+#include "Tile.h"
 #include "RTSControlReceiver.h"
 
 #define PI 3.14159
@@ -202,23 +204,25 @@ int main(int argc, char* argv[])
     vector3df(60.0f, 100.0f, 60.0f), // Bounding
     vector3df(0.0f, 0.0f, 0.0f), // Gravity
     vector3df(0.0f, 50.0f, 0.0f)); // Translation of bounding area
-
+  
   camera->addAnimator(anim);
   
   // -- Cleanup
   selector->drop();
   anim->drop();*/
-
+  
   cerr << "INITIALIZING TILE MAP" << endl;
   
   // Setup the tilemap
   //TileMap tileMap(32, HM_SIZE*HM_SCALEXZ);
-
+  
   //tileMap.addToSceneGraph(0, vector3df(0,70,0), smgr, driver, guienv);
   
   // Setup the STileMap!
-  // nimbus::STileMap map(dimension2df(HM_SIZE*HM_SCALEXZ, HM_SIZE*HM_SCALEXZ), vector2d<u32>(10, 10))
-
+  nimbus::STileMap map(device, dimension2df(HM_SIZE*HM_SCALEXZ, HM_SIZE*HM_SCALEXZ), vector2d<u32>(10, 10));
+  
+  terrain->setMaterialTexture(0, map.getTexture());
+  
   // Add some super basic lighting.
   cerr << "SETUP SUN" << endl;
   
@@ -232,7 +236,7 @@ int main(int argc, char* argv[])
     vector3df(-1*sunDistance*sin(angleInSky), sunDistance*cos(angleInSky), sunDistance*sin(tweakAngle)), // Position
     video::SColor(255, 247, 247, 87), // Color
     HM_SIZE*HM_SCALEXZ*sunFactor + sunDistance); // Radius
-
+  
   ILightSceneNode* cameraLight = smgr->addLightSceneNode(0, vector3df(0.0f, 0.0f, 0.0f), video::SColor(255, 247, 247, 87), 1800.0f);
   
   // Game Variables
@@ -331,7 +335,7 @@ int main(int argc, char* argv[])
 	if(abs(camVelocity.Z) < CAMERA_SLOWDOWN) camVelocity.Z = 0;
 	else camVelocity.Z += (camVelocity.Z > 0 ? -1 : 1)*CAMERA_SLOWDOWN;
       }
-    
+      
       if(controls.IsKeyDown(KEY_RIGHT) || device->getCursorControl()->getPosition().X >= driver->getScreenSize().Width - EDGE_TOLERENCE) {
 	camVelocity.X = (camVelocity.X > CAMERA_MAXVELO ? CAMERA_MAXVELO : camVelocity.X + CAMERA_ACCEL);
       } else if(controls.IsKeyDown(KEY_LEFT) || device->getCursorControl()->getPosition().X <= EDGE_TOLERENCE) {
@@ -340,18 +344,18 @@ int main(int argc, char* argv[])
 	if(abs(camVelocity.X) < CAMERA_SLOWDOWN) camVelocity.X = 0;
 	else camVelocity.X += (camVelocity.X > 0 ? -1 : 1)*CAMERA_SLOWDOWN;
       }
-
+      
       buffer << endl
 	     << "Camera -- " << (lockCamera ? "LOCKED" : "FREE") << endl
 	     << "Position: " << camera->getAbsolutePosition().X << ", " << camera->getAbsolutePosition().Y << ", " << camera->getAbsolutePosition().Z << ": " << camera->getTarget().X << ", " << camera->getTarget().Y << ", " << camera->getTarget().Z << endl
 	     << "Velocity: " << camVelocity.X << ", " << camVelocity.Y << ", " << camVelocity.Z;
-    
+      
       // Check camera lock.
       if(lockCamera) {
 	vector3df camPos = camera->getPosition();
 	vector3df newCamPos = camPos + camVelocity;
 	vector3df properDelta = camVelocity;
-      
+	
 	if(newCamPos.X > CAMERA_LOCKBOUND)
 	  properDelta.X = 0;
 	else if(newCamPos.X < -CAMERA_LOCKBOUND)
@@ -361,18 +365,18 @@ int main(int argc, char* argv[])
 	  properDelta.Z = 0;
 	else if(newCamPos.Z < -CAMERA_LOCKBOUND)
 	  properDelta.Z = 0;
-      
+	
 	buffer << " [" << properDelta.X << ", " << properDelta.Y << ", " << properDelta.Z << "]" << endl;
-      
+	
 	camera->setPosition(camera->getPosition() + properDelta);
 	camera->setTarget(camera->getTarget() + properDelta);
       } else { // Set position
 	buffer << endl;
-      
+	
 	camera->setPosition(camera->getPosition() + camVelocity);
 	camera->setTarget(camera->getTarget() + camVelocity);
       }
-    
+      
       // SO YOU THINK YOU CAN STREAM ME AND RENDER THE SCENE
       driver->beginScene(true, true, SColor(255, 100, 101, 140));
 

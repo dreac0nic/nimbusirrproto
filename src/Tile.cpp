@@ -62,8 +62,7 @@ namespace nimbus {
   irr::video::ITexture* Tile::getTexture(void)
   {
     // CHECK INTEGRITY OF ENVIRONMENT
-    std::cout << texture->getColorFormat() << ": " << video::ECF_A8R8G8B8 << std::endl;
-    if(texture == NULL && texture->getColorFormat() != video::ECF_A8R8G8B8) {
+    if(texture == NULL || texture->getColorFormat() != video::ECF_A8R8G8B8) {
       std::cerr << "CATASTROPIC FAILURE OF ASSET '" << this->name << "'." << std::endl;
       
       return NULL;
@@ -116,8 +115,8 @@ namespace nimbus {
 	std::cerr << buffer << std::endl;
 	
 	data[x] = color;
-	if(this->type == 1)
-	  data[x] = 0xff80aa80;
+	
+	if(this->type == 1) data[x] = 0xff80aa80;
 	//}
     }
   

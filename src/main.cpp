@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <irrlicht.h>
 
@@ -43,7 +44,13 @@ int main(int argc, char* argv[])
   IVideoDriver* driver;
   ISceneManager* smgr;
   IGUIEnvironment* guienv;
-
+  
+  // Redirect CERR to log.txt
+  ofstream log_buffer;
+  log_buffer.open("log.txt");
+  
+  streambuf* old_cerr = cerr.rdbuf(log_buffer.rdbuf());
+  
   // Setup controls.
   RTSControlReceiver controls;
   video::E_DRIVER_TYPE driverType;
@@ -218,9 +225,9 @@ int main(int argc, char* argv[])
   //tileMap.addToSceneGraph(0, vector3df(0,70,0), smgr, driver, guienv);
   
   // Setup the STileMap!
-  //nimbus::STileMap map(device, dimension2df(HM_SIZE*HM_SCALEXZ, HM_SIZE*HM_SCALEXZ), vector2d<u32>(10, 10));
+  nimbus::STileMap map(device, dimension2df(HM_SIZE*HM_SCALEXZ, HM_SIZE*HM_SCALEXZ), vector2d<u32>(10, 10));
   
-  //terrain->setMaterialTexture(0, map.getTexture());
+  terrain->setMaterialTexture(0, map.getTexture());
   
   // Add some super basic lighting.
   cerr << "SETUP SUN" << endl;
@@ -402,6 +409,10 @@ int main(int argc, char* argv[])
 
   // Uninitialize
   device->drop();
+  
+  // Clean up buffer
+  cerr.rdbuf(old_cerr);
+  log_buffer.close();
 
   return 0;
 }

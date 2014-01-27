@@ -10,3 +10,5 @@ Makefile
 *.depend
 *.cbp
 *#*#
+log.txt
+output.txt

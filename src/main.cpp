@@ -176,13 +176,14 @@ int main(int argc, char* argv[])
   
   ISceneNode* waterSurface = smgr->addWaterSurfaceSceneNode(
     mesh->getMesh(0), // Mesh in question
-    2.0f,   // Height
+    2.0f,    // Height
     500.0f,  // Speed
     300.0f); // Length
 
   waterSurface->setPosition(vector3df(-512.0f/WATER_TILEFACTOR/2.0f, 80.0f, -512.0f/WATER_TILEFACTOR/2.0f));
   
   waterSurface->setMaterialTexture(0, driver->getTexture("./assets/textures/terrain/water/shallow1_clear.png"));
+  waterSurface->setMaterialTexture(1, driver->getTexture("./assets/textures/terrain/gravel/dark1_bed.jpg"));
 
   waterSurface->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
   
@@ -219,9 +220,9 @@ int main(int argc, char* argv[])
   //tileMap.addToSceneGraph(0, vector3df(0,70,0), smgr, driver, guienv);
   
   // Setup the STileMap!
-  nimbus::STileMap map(device, dimension2df(HM_SIZE*HM_SCALEXZ, HM_SIZE*HM_SCALEXZ), vector2d<u32>(10, 10));
+  //nimbus::STileMap map(device, dimension2df(HM_SIZE*HM_SCALEXZ, HM_SIZE*HM_SCALEXZ), vector2d<u32>(10, 10));
   
-  terrain->setMaterialTexture(0, map.getTexture());
+  //terrain->setMaterialTexture(0, map.getTexture());
   
   // Add some super basic lighting.
   cerr << "SETUP SUN" << endl;

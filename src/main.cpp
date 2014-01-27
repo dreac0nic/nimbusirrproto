@@ -122,12 +122,11 @@ int main(int argc, char* argv[])
   // Setup terrain.
   ITexture* hm = driver->getTexture(heightmap.c_str());
   
-  if(!hm) {
+  if(hm == NULL) {
     cerr << "Your HM is bad and you should feel bad." << endl;
     
     heightmap = "./assets/textures/hm/hm3_simpleisland.bmp";
-  } else {
-    hm->drop();
+    hm = driver->getTexture(heightmap.c_str());
   }
   
   cerr << "CREATING TERRAIN" << endl;
@@ -183,7 +182,6 @@ int main(int argc, char* argv[])
   waterSurface->setPosition(vector3df(-512.0f/WATER_TILEFACTOR/2.0f, 80.0f, -512.0f/WATER_TILEFACTOR/2.0f));
   
   waterSurface->setMaterialTexture(0, driver->getTexture("./assets/textures/terrain/water/shallow1_clear.png"));
-  waterSurface->setMaterialTexture(1, driver->getTexture("./assets/textures/terrain/gravel/dark1_bed.jpg"));
 
   waterSurface->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
   

@@ -219,11 +219,6 @@ int main(int argc, char* argv[])
   
   cerr << "INITIALIZING TILE MAP" << endl;
   
-  // Setup the tilemap
-  //TileMap tileMap(32, HM_SIZE*HM_SCALEXZ);
-  
-  //tileMap.addToSceneGraph(0, vector3df(0,70,0), smgr, driver, guienv);
-  
   // Setup the STileMap!
   nimbus::STileMap map(device, dimension2df(HM_SIZE*HM_SCALEXZ, HM_SIZE*HM_SCALEXZ), vector2d<u32>(10, 10));
   
@@ -392,9 +387,6 @@ int main(int argc, char* argv[])
 
       // Just gotta get drawn, just gotta drawn right on to here!
       guienv->getBuiltInFont()->draw(buffer.str().c_str(), rect<s32>(10, 10, 260, 22), video::SColor(255, 255, 255, 255));
-
-      // Sigh... I admit... something similar to de-feet... all three of them
-      //tileMap.update(guienv, driver);
 
       driver->endScene();
 

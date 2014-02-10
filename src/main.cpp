@@ -402,7 +402,7 @@ int main(int argc, char* argv[])
   // Uninitialize
   device->drop();
   
-  // Clean up buffer
+  // Re-redirect the buffer properly
   cerr.rdbuf(old_cerr);
   log_buffer.close();
 
